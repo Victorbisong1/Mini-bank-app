@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://mini-bank-backend.onrender.com/api",
+  baseURL: "https://mini-bank-backend-lqhl.onrender.com/api",
   headers: {
     "Content-Type": "application/json",
   },
