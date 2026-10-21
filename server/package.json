@@ -13,7 +13,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon src/index.js"
+    "dev": "src/index.js"
   },
   "keywords": [],
   "type": "commonjs"
