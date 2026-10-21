@@ -13,6 +13,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "node src/index.js",
     "dev": "src/index.js"
   },
   "keywords": [],
