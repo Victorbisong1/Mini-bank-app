@@ -223,14 +223,14 @@ const accountSlice = createSlice({
          state.actionLoading = false;
          state.actionSuccess = action.payload?.message || 'Loan application submitted successfully!';
         })
-      .addMatcher(
+        .addMatcher(
         (action) => action.type.endsWith('/rejected') && !action.type.startsWith('account/fetch'),
         (state, action) => {
-          state.actionLoading = false;
+          state.actionLoading = false; // 👈 Ensures loading turns off on error
           state.error = action.payload;
         }
-      );
-  }
+      )
+    }
 });
 
 export const { clearAccountStatus } = accountSlice.actions;
