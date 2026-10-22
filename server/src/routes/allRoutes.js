@@ -28,13 +28,13 @@ router.post('/apply', protect, getloan)
 router.get('/account/myloans', protect, myloans)
 
 //admin routes
-router.get('/stats', protect, adminOnly, getstats)
-router.get('/users', protect, adminOnly, getusers)
-router.post('/users', protect, adminOnly, createuser)
-router.put('/users/:id', protect, adminOnly, updateusers)
-router.put('/users/:id/ban', protect, adminOnly, banuser)
-router.get('/loans', protect, adminOnly, getAllLoans)
-router.put('/loans/:id/status', protect, adminOnly, updateloans)
-router.get('/transactions', protect, adminOnly, admintrans)
+router.get('/admin/stats', protect, adminOnly, getstats)
+router.get('/admin/users', protect, adminOnly, getusers)
+router.post('/admin/users', protect, adminOnly, createuser)
+router.put('/admin/users/:id', protect, adminOnly, updateusers)
+router.put('/admin/users/:id/ban', protect, adminOnly, banuser)
+router.get('/admin/loans', protect, adminOnly, getAllLoans)
+router.put('/admin/loans/:id/status', protect, adminOnly, updateloans)
+router.get('/admin/transactions', protect, adminOnly, admintrans)
 
 module.exports = router
