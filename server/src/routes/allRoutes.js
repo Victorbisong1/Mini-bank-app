@@ -13,6 +13,7 @@ router.get('/auth/lookup/:accountNumber', protect, lookup)
 
 //user routes
 router.get('/user/dashboard', protect, getdashboard)
+router.get('/account/dashboard', protect, getdashboard)
 router.post('/user/transfer', protect, transfer)
 router.get('/user/transactions', protect, transactions)
 router.post('/user/withdraw', protect, withdraw)
