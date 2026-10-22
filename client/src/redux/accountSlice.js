@@ -160,6 +160,7 @@ const accountSlice = createSlice({
     clearAccountStatus(state) {
       state.error = null;
       state.actionSuccess = null;
+      state.actionLoading = false;
     }
   },
   extraReducers: (builder) => {
@@ -186,51 +187,62 @@ const accountSlice = createSlice({
       .addCase(fetchMyLoans.fulfilled, (state, action) => {
         state.myLoans = action.payload;
       })
-      // Action loading states
+      
+      // ✅ Explicit Success Handlers
+      .addCase(sendTransfer.fulfilled, (state, action) => {
+        state.actionLoading = false;
+        state.actionSuccess = action.payload?.message || 'Transfer successful!';
+      })
+      .addCase(withdrawFunds.fulfilled, (state, action) => {
+        state.actionLoading = false;
+        state.actionSuccess = action.payload?.message || 'Withdrawal successful!';
+      })
+      .addCase(depositFunds.fulfilled, (state, action) => {
+        state.actionLoading = false;
+        state.actionSuccess = action.payload?.message || 'Deposit successful!';
+      })
+      .addCase(payAirtime.fulfilled, (state, action) => {
+        state.actionLoading = false;
+        state.actionSuccess = action.payload?.message || 'Airtime successful!';
+      })
+      .addCase(payData.fulfilled, (state, action) => {
+        state.actionLoading = false;
+        state.actionSuccess = action.payload?.message || 'Data purchase successful!';
+      })
+      .addCase(payElectricity.fulfilled, (state, action) => {
+        state.actionLoading = false;
+        state.actionSuccess = action.payload?.message || 'Electricity payment successful!';
+      })
+      .addCase(applyForLoan.fulfilled, (state, action) => {
+        state.actionLoading = false;
+        state.actionSuccess = action.payload?.message || 'Loan application submitted successfully!';
+      })
+
+      // ✅ 1. Safe Pending Matcher (only account forms/mutations)
       .addMatcher(
-        (action) => action.type.endsWith('/pending') && !action.type.startsWith('account/fetch'),
+        (action) =>
+          action.type.startsWith('account/') &&
+          action.type.endsWith('/pending') &&
+          !action.type.includes('fetch'),
         (state) => {
           state.actionLoading = true;
           state.error = null;
           state.actionSuccess = null;
-        })
-      // ✅ ADD THESE EXPLICIT SUCCESS HANDLERS INSTEAD
-       .addCase(sendTransfer.fulfilled, (state, action) => {
-         state.actionLoading = false;
-         state.actionSuccess = action.payload?.message || 'Transfer successful!';
-        })
-       .addCase(withdrawFunds.fulfilled, (state, action) => {
-         state.actionLoading = false;
-         state.actionSuccess = action.payload?.message || 'Withdrawal successful!';
-       })
-       .addCase(depositFunds.fulfilled, (state, action) => {
-         state.actionLoading = false;
-         state.actionSuccess = action.payload?.message || 'Deposit successful!';
-       })
-       .addCase(payAirtime.fulfilled, (state, action) => {
-         state.actionLoading = false;
-         state.actionSuccess = action.payload?.message || 'Airtime successful!';
-       })
-       .addCase(payData.fulfilled, (state, action) => {
-         state.actionLoading = false;
-         state.actionSuccess = action.payload?.message || 'Data purchase successful!';
-       })
-       .addCase(payElectricity.fulfilled, (state, action) => {
-         state.actionLoading = false;
-         state.actionSuccess = action.payload?.message || 'Electricity payment successful!';
-        })
-       .addCase(applyForLoan.fulfilled, (state, action) => {
-         state.actionLoading = false;
-         state.actionSuccess = action.payload?.message || 'Loan application submitted successfully!';
-        })
-        .addMatcher(
-        (action) => action.type.endsWith('/rejected') && !action.type.startsWith('account/fetch'),
-        (state, action) => {
-          state.actionLoading = false; // 👈 Ensures loading turns off on error
-          state.error = action.payload;
         }
       )
-    }
+
+      // ✅ 2. Safe Rejected Matcher (resets button state on error)
+      .addMatcher(
+        (action) =>
+          action.type.startsWith('account/') &&
+          action.type.endsWith('/rejected') &&
+          !action.type.includes('fetch'),
+        (state, action) => {
+          state.actionLoading = false;
+          state.error = action.payload;
+        }
+      );
+  }
 });
 
 export const { clearAccountStatus } = accountSlice.actions;
