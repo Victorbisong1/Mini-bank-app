@@ -29,7 +29,7 @@ const airtime = async(req, res) => {
     const reference = 'AIR_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6).toUpperCase();
     const tx = await Transaction.create({
       userId: user._id,
-      type: 'BILL_PAYMENT',
+      type: 'BILL PAYMENT',
       amount: numAmount,
       balanceAfter: newBalance,
       description: `Airtime Recharge - ${provider.toUpperCase()} (${phone})`,
@@ -84,7 +84,7 @@ const getdata = async(req, res) => {
     const reference = 'DAT_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6).toUpperCase();
     const tx = await Transaction.create({
       userId: user._id,
-      type: 'BILL_PAYMENT',
+      type: 'BILL PAYMENT',
       amount: numAmount,
       balanceAfter: newBalance,
       description: `Data Bundle - ${provider.toUpperCase()} ${planName} (${phone})`,
@@ -143,7 +143,7 @@ const electricity = async(req, res) => {
 
     const tx = await Transaction.create({
       userId: user._id,
-      type: 'BILL_PAYMENT',
+      type: 'BILL PAYMENT',
       amount: numAmount,
       balanceAfter: newBalance,
       description: `Electricity Token - ${disco.toUpperCase()} (${meterNumber})`,
