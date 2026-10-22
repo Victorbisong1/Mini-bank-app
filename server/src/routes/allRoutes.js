@@ -9,12 +9,12 @@ const {airtime, getdata, electricity, getloan, myloans} = require('../controller
 router.post('/auth/register', registeruser)
 router.post('/auth/login', login)
 router.get('/auth/me', protect, getme)
-router.get('/auth/lookup/ :accountNumber', protect, lookup)
+router.get('/auth/lookup/:accountNumber', protect, lookup)
 
 //user routes
 router.get('/user/dashboard', protect, getdashboard)
-router.get('/user/transfer', protect, transfer)
-router.post('/user/transactions', protect, transactions)
+router.post('/user/transfer', protect, transfer)
+router.get('/user/transactions', protect, transactions)
 router.post('/user/withdraw', protect, withdraw)
 router.post('/user/deposit', protect, deposit)
 
@@ -34,7 +34,7 @@ router.post('/users', protect, adminOnly, createuser)
 router.put('/users/:id', protect, adminOnly, updateusers)
 router.put('/users/:id/ban', protect, adminOnly, banuser)
 router.get('/loans', protect, adminOnly, getAllLoans)
-router.get('/loans/:id/status', protect, adminOnly, updateloans)
+router.put('/loans/:id/status', protect, adminOnly, updateloans)
 router.get('/transactions', protect, adminOnly, admintrans)
 
 module.exports = router
