@@ -230,12 +230,12 @@ const transfer = async (req, res) => {
     const cleanDesc = description && description.trim() ? description.trim() : `Transfer to ${recipient.name}`;
 
     // Deduct sender balance
-    const newSenderBalance = sender.balance - numAmount;
+    const newSenderBalance = Number(sender.balance) - numAmount;
     sender.balance = newSenderBalance;
     await sender.save();
 
     // Credit recipient balance
-    const newRecipientBalance = recipient.balance + numAmount;
+    const newRecipientBalance = Number(recipient.balance) + numAmount;
     recipient.balance = newRecipientBalance;
     await recipient.save();
 
@@ -303,7 +303,7 @@ const withdraw = async (req, res) => {
       });
     }
 
-    const newBalance = user.balance - numAmount;
+    const newBalance = Number(user.balance) - numAmount;
     user.balance = newBalance;
     await user.save();
 
@@ -350,7 +350,7 @@ const deposit = async (req, res) => {
     const user = await User.findById(req.user._id);
     if (!user) return res.status(404).json({ message: 'User not found.' });
 
-    const newBalance = user.balance + numAmount;
+    const newBalance = Number(user.balance) + numAmount;
     user.balance = newBalance;
     await user.save();
 

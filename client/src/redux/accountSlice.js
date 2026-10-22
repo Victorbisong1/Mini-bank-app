@@ -193,15 +193,36 @@ const accountSlice = createSlice({
           state.actionLoading = true;
           state.error = null;
           state.actionSuccess = null;
-        }
-      )
-      .addMatcher(
-        (action) => action.type.endsWith('/fulfilled') && !action.type.startsWith('account/fetch'),
-        (state, action) => {
-          state.actionLoading = false;
-          state.actionSuccess = action.payload?.message || 'Operation completed successfully.';
-        }
-      )
+        })
+      // ✅ ADD THESE EXPLICIT SUCCESS HANDLERS INSTEAD
+       .addCase(sendTransfer.fulfilled, (state, action) => {
+         state.actionLoading = false;
+         state.actionSuccess = action.payload?.message || 'Transfer successful!';
+        })
+       .addCase(withdrawFunds.fulfilled, (state, action) => {
+         state.actionLoading = false;
+         state.actionSuccess = action.payload?.message || 'Withdrawal successful!';
+       })
+       .addCase(depositFunds.fulfilled, (state, action) => {
+         state.actionLoading = false;
+         state.actionSuccess = action.payload?.message || 'Deposit successful!';
+       })
+       .addCase(payAirtime.fulfilled, (state, action) => {
+         state.actionLoading = false;
+         state.actionSuccess = action.payload?.message || 'Airtime successful!';
+       })
+       .addCase(payData.fulfilled, (state, action) => {
+         state.actionLoading = false;
+         state.actionSuccess = action.payload?.message || 'Data purchase successful!';
+       })
+       .addCase(payElectricity.fulfilled, (state, action) => {
+         state.actionLoading = false;
+         state.actionSuccess = action.payload?.message || 'Electricity payment successful!';
+        })
+       .addCase(applyForLoan.fulfilled, (state, action) => {
+         state.actionLoading = false;
+         state.actionSuccess = action.payload?.message || 'Loan application submitted successfully!';
+        })
       .addMatcher(
         (action) => action.type.endsWith('/rejected') && !action.type.startsWith('account/fetch'),
         (state, action) => {
