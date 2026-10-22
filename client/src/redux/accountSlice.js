@@ -6,7 +6,7 @@ export const fetchDashboard = createAsyncThunk(
   'account/fetchDashboard',
   async (_, { dispatch, rejectWithValue }) => {
     try {
-      const res = await api.get('/account/dashboard');
+      const res = await api.get('/user/dashboard');
       if (res.data.user?.balance !== undefined) {
         dispatch(updateLocalBalance(res.data.user.balance));
       }
@@ -21,7 +21,7 @@ export const fetchTransactions = createAsyncThunk(
   'account/fetchTransactions',
   async (_, { rejectWithValue }) => {
     try {
-      const res = await api.get('/account/transactions');
+      const res = await api.get('/user/transactions');
       return res.data.transactions;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || 'Failed to load transactions.');
@@ -33,7 +33,7 @@ export const sendTransfer = createAsyncThunk(
   'account/sendTransfer',
   async ({ recipientAccountNumber, amount, description }, { dispatch, rejectWithValue }) => {
     try {
-      const res = await api.post('/account/transfer', { recipientAccountNumber, amount, description });
+      const res = await api.post('/user/transfer', { recipientAccountNumber, amount, description });
       dispatch(updateLocalBalance(res.data.newBalance));
       dispatch(fetchDashboard());
       return res.data;
@@ -47,7 +47,7 @@ export const withdrawFunds = createAsyncThunk(
   'account/withdrawFunds',
   async ({ amount, bankName, accountNumber, accountName }, { dispatch, rejectWithValue }) => {
     try {
-      const res = await api.post('/account/withdraw', { amount, bankName, accountNumber, accountName });
+      const res = await api.post('/user/withdraw', { amount, bankName, accountNumber, accountName });
       dispatch(updateLocalBalance(res.data.newBalance));
       dispatch(fetchDashboard());
       return res.data;
@@ -61,7 +61,7 @@ export const depositFunds = createAsyncThunk(
   'account/depositFunds',
   async ({ amount, channel }, { dispatch, rejectWithValue }) => {
     try {
-      const res = await api.post('/account/deposit', { amount, channel });
+      const res = await api.post('/user/deposit', { amount, channel });
       dispatch(updateLocalBalance(res.data.newBalance));
       dispatch(fetchDashboard());
       return res.data;
@@ -75,7 +75,7 @@ export const payAirtime = createAsyncThunk(
   'account/payAirtime',
   async ({ provider, phone, amount }, { dispatch, rejectWithValue }) => {
     try {
-      const res = await api.post('/bills/airtime', { provider, phone, amount });
+      const res = await api.post('/airtime', { provider, phone, amount });
       dispatch(updateLocalBalance(res.data.newBalance));
       dispatch(fetchDashboard());
       return res.data;
@@ -89,7 +89,7 @@ export const payData = createAsyncThunk(
   'account/payData',
   async ({ provider, phone, planName, amount }, { dispatch, rejectWithValue }) => {
     try {
-      const res = await api.post('/bills/data', { provider, phone, planName, amount });
+      const res = await api.post('/data', { provider, phone, planName, amount });
       dispatch(updateLocalBalance(res.data.newBalance));
       dispatch(fetchDashboard());
       return res.data;
@@ -103,7 +103,7 @@ export const payElectricity = createAsyncThunk(
   'account/payElectricity',
   async ({ disco, meterNumber, meterType, amount }, { dispatch, rejectWithValue }) => {
     try {
-      const res = await api.post('/bills/electricity', { disco, meterNumber, meterType, amount });
+      const res = await api.post('/electric', { disco, meterNumber, meterType, amount });
       dispatch(updateLocalBalance(res.data.newBalance));
       dispatch(fetchDashboard());
       return res.data;
@@ -117,7 +117,7 @@ export const applyForLoan = createAsyncThunk(
   'account/applyForLoan',
   async ({ amount, purpose, durationMonths }, { dispatch, rejectWithValue }) => {
     try {
-      const res = await api.post('/loans/apply', { amount, purpose, durationMonths });
+      const res = await api.post('/apply', { amount, purpose, durationMonths });
       dispatch(fetchDashboard());
       return res.data;
     } catch (err) {
@@ -130,7 +130,7 @@ export const fetchMyLoans = createAsyncThunk(
   'account/fetchMyLoans',
   async (_, { rejectWithValue }) => {
     try {
-      const res = await api.get('/loans/my-loans');
+      const res = await api.get('/myloans');
       return res.data.loans;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || 'Failed to fetch loans.');
