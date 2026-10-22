@@ -32,14 +32,15 @@ const getstats = async(req, res) => {
     }
 }
 
-const getusers = async(req, res) => {
-    try {
-        const users = (await User.find({}).select('-password')).sort({createdAt: -1})
-        res.json({users})
-    } catch (error) {
-        res.status(500).json({message: 'Error fetching users'})
-    }
-}
+const getusers = async (req, res) => {
+  try {
+    const users = await User.find({}).sort({ createdAt: -1 });
+    res.json({ users });
+  } catch (err) {
+    console.error('Get users error:', err);
+    res.status(500).json({ message: 'Error fetching users.' });
+  }
+};
 
 const createuser = async(req, res) => {
     try {
