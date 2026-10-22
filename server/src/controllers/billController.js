@@ -22,7 +22,7 @@ const airtime = async(req, res) => {
       });
     }
 
-    const newBalance = user.balance - numAmount;
+    const newBalance = Number(user.balance) - numAmount;
     user.balance = newBalance;
     await user.save();
 
@@ -77,7 +77,7 @@ const getdata = async(req, res) => {
       });
     }
 
-    const newBalance = user.balance - numAmount;
+    const newBalance = Number(user.balance) - numAmount;
     user.balance = newBalance;
     await user.save();
 
@@ -133,7 +133,7 @@ const electricity = async(req, res) => {
       });
     }
 
-    const newBalance = user.balance - numAmount;
+    const newBalance = Number(user.balance) - numAmount;
     user.balance = newBalance;
     await user.save();
 

@@ -130,7 +130,7 @@ export const fetchMyLoans = createAsyncThunk(
   'account/fetchMyLoans',
   async (_, { rejectWithValue }) => {
     try {
-      const res = await api.get('/myloans');
+      const res = await api.get('/account/myloans');
       return res.data.loans;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || 'Failed to fetch loans.');
