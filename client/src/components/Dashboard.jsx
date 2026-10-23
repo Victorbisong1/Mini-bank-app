@@ -16,7 +16,15 @@ import {
   CheckCircle2, 
   XCircle, 
   Eye,
-  RefreshCw
+  EyeOff,
+  RefreshCw,
+  Wifi,           
+  Tv,       
+  Zap,       
+  Globe,    
+  GraduationCap,
+  Gamepad2,       
+  MoreHorizontal
 } from 'lucide-react';
 
 import TransferModal from './TransferModal';
@@ -37,6 +45,9 @@ export default function Dashboard() {
   const [copiedAcc, setCopiedAcc] = useState(false);
   const [filterType, setFilterType] = useState('ALL');
   const [searchQuery, setSearchQuery] = useState('');
+
+  // State to track balance visibility toggle
+  const [showBalance, setShowBalance] = useState(true);
 
   useEffect(() => {
     dispatch(fetchDashboard());
@@ -65,6 +76,18 @@ export default function Dashboard() {
     }
     return true;
   });
+  
+  // OPay Standard Utility Grid Items
+  const opayUtilities = [
+    { name: 'Airtime', icon: <Smartphone size={20} />, color: '#10b981', bg: 'rgba(16, 185, 129, 0.15)' },
+    { name: 'Data', icon: <Wifi size={20} />, color: '#06b6d4', bg: 'rgba(6, 182, 212, 0.15)' },
+    { name: 'Betting', icon: <Gamepad2 size={20} />, color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.15)' },
+    { name: 'TV / Cable', icon: <Tv size={20} />, color: '#8b5cf6', bg: 'rgba(139, 92, 246, 0.15)' },
+    { name: 'Electricity', icon: <Zap size={20} />, color: '#eab308', bg: 'rgba(234, 179, 8, 0.15)' },
+    { name: 'Internet', icon: <Globe size={20} />, color: '#3b82f6', bg: 'rgba(59, 130, 246, 0.15)' },
+    { name: 'School & Exam', icon: <GraduationCap size={20} />, color: '#ec4899', bg: 'rgba(236, 72, 153, 0.15)' },
+    { name: 'More', icon: <MoreHorizontal size={20} />, color: '#64748b', bg: 'rgba(100, 116, 139, 0.15)' },
+  ];
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
@@ -120,8 +143,18 @@ export default function Dashboard() {
           {/* Card Top */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 4 }}>
-                Available Balance
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-dim)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+                  Available Balance
+                </span>
+                {/* OPay Feature: Balance Visibility Toggle */}
+                <button 
+                  onClick={() => setShowBalance(!showBalance)} 
+                  style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', padding: 0 }}
+                  title={showBalance ? "Hide Balance" : "Show Balance"}
+                >
+                  {showBalance ? <Eye size={15} /> : <EyeOff size={15} />}
+                </button>
               </div>
               <div style={{ 
                 fontSize: '2.2rem', 
@@ -130,7 +163,7 @@ export default function Dashboard() {
                 color: '#ffffff',
                 letterSpacing: '-0.03em'
               }}>
-                ${(user?.balance !== undefined ? user.balance : 0).toLocaleString()}
+                {showBalance ? `$${(user?.balance !== undefined ? user.balance : 0).toLocaleString()}` : '••••••••'}
               </div>
             </div>
             {/* Card Chip / Logo */}
@@ -258,6 +291,49 @@ export default function Dashboard() {
               <span>Top Up Balance</span>
             </button>
           </div>
+        </div>
+      </div>
+
+      {/* OPay Standard: Expanded Payment & Utilities Grid */}
+      <div className="glass-card" style={{ padding: 22 }}>
+        <div style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 16 }}>
+          Payment & Utilities
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))', gap: 16, textAlign: 'center' }}>
+          {opayUtilities.map((item, idx) => (
+            <div 
+              key={idx} 
+              onClick={() => setModalType('bills')}
+              style={{ 
+                display: 'flex', 
+                flexDirection: 'column', 
+                alignItems: 'center', 
+                cursor: 'pointer', 
+                padding: '12px 8px', 
+                borderRadius: 'var(--radius-md)', 
+                background: 'rgba(255, 255, 255, 0.02)',
+                border: '1px solid var(--border)',
+                transition: 'all 0.2s ease'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.06)'}
+              onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.02)'}
+            >
+              <div style={{ 
+                width: 44, 
+                height: 44, 
+                borderRadius: '50%', 
+                background: item.bg, 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center', 
+                color: item.color, 
+                marginBottom: 8 
+              }}>
+                {item.icon}
+              </div>
+              <span style={{ fontSize: '0.78rem', fontWeight: 500, color: 'var(--text-main)' }}>{item.name}</span>
+            </div>
+          ))}
         </div>
       </div>
 
