@@ -122,7 +122,7 @@ export default function Dashboard() {
         className="glass-card"
         style={{
           background:
-            "linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(6, 182, 212, 0.08) 100%)",
+          "linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(6, 182, 212, 0.08) 100%)",
           border: "1px solid rgba(16, 185, 129, 0.3)",
           borderRadius: "var(--radius-xl)",
           padding: "20px 24px",
@@ -150,6 +150,7 @@ export default function Dashboard() {
           </div>
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              MiniBank Vault
               <span
                 style={{
                   fontSize: "0.9rem",

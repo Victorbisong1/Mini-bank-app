@@ -68,7 +68,7 @@ export default function SavingsModal({ isOpen, onClose }) {
               <PiggyBank size={20} />
             </div>
             <div>
-              <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700 }}>OWealth Vault</h3>
+              <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700 }}>MiniBank Vault</h3>
               <span style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>Earn up to 15% annual interest</span>
             </div>
           </div>
