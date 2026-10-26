@@ -1,4 +1,4 @@
-const User = require('../server/src/models/Users');
+const User = require('../models/Users');
 
 const generateUniqueAccountNumber = async () => {
   for (let i = 0; i < 25; i++) {
