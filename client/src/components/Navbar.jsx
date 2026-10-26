@@ -8,7 +8,6 @@ import {
   LogOut, 
   ShieldAlert, 
   LayoutDashboard, 
-  Settings, 
   User 
 } from 'lucide-react';
 
@@ -67,9 +66,9 @@ export default function Navbar({ activeView, setActiveView }) {
               letterSpacing: '-0.02em',
               display: 'flex',
               alignItems: 'center',
-              gap: 6
+              gap: 2
             }}>
-              Mini<span style={{ color: 'var(--accent-emerald)' }}>Bank</span>
+              Cash<span style={{ color: 'var(--accent-emerald)' }}>Versal</span>
             </div>
             <div style={{ fontSize: '0.72rem', color: 'var(--text-dim)', letterSpacing: '0.04em' }}>
               SECURE PLATFORM
@@ -152,36 +151,6 @@ export default function Navbar({ activeView, setActiveView }) {
             )}
           </button>
 
-          {/* User badge */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div style={{
-              width: 32,
-              height: 32,
-              borderRadius: '50%',
-              background: user?.role === 'admin' ? 'rgba(168, 85, 247, 0.2)' : 'rgba(59, 130, 246, 0.2)',
-              border: `1px solid ${user?.role === 'admin' ? 'rgba(168, 85, 247, 0.4)' : 'rgba(59, 130, 246, 0.4)'}`,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: user?.role === 'admin' ? '#c084fc' : '#60a5fa'
-            }}>
-              <User size={16} />
-            </div>
-            <div style={{ display: 'none', md: 'block', textAlign: 'left' }} className="user-text-meta">
-              <div style={{ fontSize: '0.85rem', fontWeight: 600 }}>{user?.name}</div>
-              <div style={{ display: 'flex', gap: 4 }}>
-                <span className={`badge ${user?.role === 'admin' ? 'badge-admin' : 'badge-user'}`} style={{ fontSize: '0.65rem', padding: '1px 6px' }}>
-                  {user?.role}
-                </span>
-                {user?.status === 'banned' && (
-                  <span className="badge badge-banned" style={{ fontSize: '0.65rem', padding: '1px 6px' }}>
-                    BANNED
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
-
           {/* Logout */}
           <button
             onClick={() => dispatch(logout())}
@@ -190,7 +159,7 @@ export default function Navbar({ activeView, setActiveView }) {
             title="Sign out"
           >
             <LogOut size={14} />
-            <span style={{ display: 'none', md: 'inline' }}>Logout</span>
+            <span>Logout</span>
           </button>
         </div>
       </div>

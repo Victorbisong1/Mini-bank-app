@@ -122,7 +122,7 @@ export default function Dashboard() {
         className="glass-card"
         style={{
           background:
-          "linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(6, 182, 212, 0.08) 100%)",
+            "linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(6, 182, 212, 0.08) 100%)",
           border: "1px solid rgba(16, 185, 129, 0.3)",
           borderRadius: "var(--radius-xl)",
           padding: "20px 24px",
@@ -157,7 +157,7 @@ export default function Dashboard() {
                   color: "#ffffff",
                 }}
               >
-                MiniBank Vault
+                CashVersal Vault
               </span>
               <span
                 style={{
@@ -184,10 +184,10 @@ export default function Dashboard() {
                 marginTop: 2,
               }}
             >
-              ${(user?.savingsBalance || 0).toLocaleString()}
+              ₦{(user?.savingsBalance || 0).toLocaleString()}
             </div>
             <div style={{ fontSize: "0.75rem", color: "var(--text-dim)" }}>
-              Est. Daily Yield: +$
+              Est. Daily Yield: +₦
               {(((user?.savingsBalance || 0) * 0.15) / 365).toFixed(2)} / day
             </div>
           </div>
@@ -299,7 +299,7 @@ export default function Dashboard() {
                 }}
               >
                 {showBalance
-                  ? `$${(user?.balance !== undefined ? user.balance : 0).toLocaleString()}`
+                  ? `₦${(user?.balance !== undefined ? user.balance : 0).toLocaleString()}`
                   : "••••••••"}
               </div>
             </div>
@@ -592,7 +592,7 @@ export default function Dashboard() {
               fontFamily: "var(--font-mono)",
             }}
           >
-            +${(stats?.totalReceived || 0).toLocaleString()}
+            +₦{(stats?.totalReceived || 0).toLocaleString()}
           </div>
         </div>
         <div className="glass-card" style={{ padding: "16px 20px" }}>
@@ -613,7 +613,7 @@ export default function Dashboard() {
               fontFamily: "var(--font-mono)",
             }}
           >
-            -${(stats?.totalSent || 0).toLocaleString()}
+            -₦{(stats?.totalSent || 0).toLocaleString()}
           </div>
         </div>
         <div className="glass-card" style={{ padding: "16px 20px" }}>
@@ -696,7 +696,7 @@ export default function Dashboard() {
                       fontFamily: "var(--font-mono)",
                     }}
                   >
-                    ${Number(loan.amount).toLocaleString()}
+                    ₦{Number(loan.amount).toLocaleString()}
                   </div>
                   <div
                     style={{ fontSize: "0.75rem", color: "var(--text-dim)" }}
@@ -919,7 +919,7 @@ export default function Dashboard() {
                         color: isCredit ? "var(--accent-emerald)" : "#f87171",
                       }}
                     >
-                      {isCredit ? "+" : "-"}$
+                      {isCredit ? "+" : "-"}₦
                       {Number(tx.amount || 0).toLocaleString()}
                     </div>
                     <div
