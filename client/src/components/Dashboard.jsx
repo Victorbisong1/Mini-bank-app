@@ -103,7 +103,8 @@ export default function Dashboard() {
             Hello, {user?.name || "Customer"}
           </h1>
           <p style={{ fontSize: "0.875rem", color: "var(--text-muted)" }}>
-            Welcome to your CashVersal dashboard. Transfer funds, pay bills, and manage credit.
+            Welcome to your digital dashboard. Transfer funds, pay bills, and
+            manage credit.
           </p>
         </div>
         <button
@@ -117,12 +118,11 @@ export default function Dashboard() {
         </button>
       </div>
 
-      {/* CashVersal Vault Card */}
       <div
         className="glass-card"
         style={{
           background:
-            "linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(6, 182, 212, 0.08) 100%)",
+          "linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(6, 182, 212, 0.08) 100%)",
           border: "1px solid rgba(16, 185, 129, 0.3)",
           borderRadius: "var(--radius-xl)",
           padding: "20px 24px",
@@ -157,7 +157,7 @@ export default function Dashboard() {
                   color: "#ffffff",
                 }}
               >
-                CashVersal Vault
+                MiniBank Vault
               </span>
               <span
                 style={{
@@ -184,10 +184,10 @@ export default function Dashboard() {
                 marginTop: 2,
               }}
             >
-              ₦{(user?.savingsBalance || 0).toLocaleString()}
+              ${(user?.savingsBalance || 0).toLocaleString()}
             </div>
             <div style={{ fontSize: "0.75rem", color: "var(--text-dim)" }}>
-              Est. Daily Yield: +₦
+              Est. Daily Yield: +$
               {(((user?.savingsBalance || 0) * 0.15) / 365).toFixed(2)} / day
             </div>
           </div>
@@ -230,6 +230,7 @@ export default function Dashboard() {
             minHeight: 220,
           }}
         >
+          {/* Subtle watermark badge */}
           <div
             style={{
               position: "absolute",
@@ -271,6 +272,7 @@ export default function Dashboard() {
                 >
                   Available Balance
                 </span>
+                {/* Balance Visibility Toggle */}
                 <button
                   onClick={() => setShowBalance(!showBalance)}
                   style={{
@@ -297,10 +299,11 @@ export default function Dashboard() {
                 }}
               >
                 {showBalance
-                  ? `₦${(user?.balance !== undefined ? user.balance : 0).toLocaleString()}`
+                  ? `$${(user?.balance !== undefined ? user.balance : 0).toLocaleString()}`
                   : "••••••••"}
               </div>
             </div>
+            {/* Card Chip / Logo */}
             <div
               style={{
                 width: 44,
@@ -408,6 +411,7 @@ export default function Dashboard() {
                 gap: 10,
               }}
             >
+              {/* Send Money */}
               <button
                 onClick={() => setModalType("transfer")}
                 className="btn btn-secondary"
@@ -439,6 +443,7 @@ export default function Dashboard() {
                 </span>
               </button>
 
+              {/* Withdraw */}
               <button
                 onClick={() => setModalType("withdraw")}
                 className="btn btn-secondary"
@@ -468,6 +473,7 @@ export default function Dashboard() {
                 </span>
               </button>
 
+              {/* Pay Bills */}
               <button
                 onClick={() => setModalType("bills")}
                 className="btn btn-secondary"
@@ -497,6 +503,7 @@ export default function Dashboard() {
                 </span>
               </button>
 
+              {/* Request Loan */}
               <button
                 onClick={() => setModalType("loan")}
                 className="btn btn-secondary"
@@ -528,6 +535,7 @@ export default function Dashboard() {
             </div>
           </div>
 
+          {/* Top up helper button */}
           <div
             style={{
               marginTop: 14,
@@ -584,7 +592,7 @@ export default function Dashboard() {
               fontFamily: "var(--font-mono)",
             }}
           >
-            +₦{(stats?.totalReceived || 0).toLocaleString()}
+            +${(stats?.totalReceived || 0).toLocaleString()}
           </div>
         </div>
         <div className="glass-card" style={{ padding: "16px 20px" }}>
@@ -605,7 +613,7 @@ export default function Dashboard() {
               fontFamily: "var(--font-mono)",
             }}
           >
-            -₦{(stats?.totalSent || 0).toLocaleString()}
+            -${(stats?.totalSent || 0).toLocaleString()}
           </div>
         </div>
         <div className="glass-card" style={{ padding: "16px 20px" }}>
@@ -688,7 +696,7 @@ export default function Dashboard() {
                       fontFamily: "var(--font-mono)",
                     }}
                   >
-                    ₦{Number(loan.amount).toLocaleString()}
+                    ${Number(loan.amount).toLocaleString()}
                   </div>
                   <div
                     style={{ fontSize: "0.75rem", color: "var(--text-dim)" }}
@@ -744,6 +752,7 @@ export default function Dashboard() {
               flexWrap: "wrap",
             }}
           >
+            {/* Filter buttons */}
             <div
               style={{
                 display: "flex",
@@ -847,6 +856,7 @@ export default function Dashboard() {
                       "rgba(255, 255, 255, 0.02)")
                   }
                 >
+                  {/* Left: Icon & Description */}
                   <div
                     style={{ display: "flex", alignItems: "center", gap: 12 }}
                   >
@@ -899,6 +909,7 @@ export default function Dashboard() {
                     </div>
                   </div>
 
+                  {/* Right: Amount & Receipt prompt */}
                   <div style={{ textAlign: "right" }}>
                     <div
                       style={{
@@ -908,7 +919,7 @@ export default function Dashboard() {
                         color: isCredit ? "var(--accent-emerald)" : "#f87171",
                       }}
                     >
-                      {isCredit ? "+" : "-"}₦
+                      {isCredit ? "+" : "-"}$
                       {Number(tx.amount || 0).toLocaleString()}
                     </div>
                     <div

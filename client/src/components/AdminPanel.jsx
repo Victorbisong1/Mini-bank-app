@@ -46,7 +46,7 @@ export default function AdminPanel() {
     email: '',
     password: '',
     role: 'user',
-    balance: '50000'
+    balance: '1000'
   });
 
   // Edit user form state
@@ -107,7 +107,7 @@ export default function AdminPanel() {
     })).then((res) => {
       if (!res.error) {
         setShowCreateModal(false);
-        setNewUserForm({ name: '', email: '', password: '', role: 'user', balance: '50000' });
+        setNewUserForm({ name: '', email: '', password: '', role: 'user', balance: '1000' });
       }
     });
   };
@@ -199,7 +199,7 @@ export default function AdminPanel() {
         <div className="glass-card" style={{ padding: '16px 20px' }}>
           <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginBottom: 4 }}>Platform Total Deposits</div>
           <div style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--accent-emerald)', fontFamily: 'var(--font-mono)' }}>
-            ₦{(stats?.totalPlatformBalances || 0).toLocaleString()}
+            ${(stats?.totalPlatformBalances || 0).toLocaleString()}
           </div>
           <div style={{ fontSize: '0.72rem', color: 'var(--text-dim)', marginTop: 4 }}>
             Across all bank wallets
@@ -326,7 +326,7 @@ export default function AdminPanel() {
                       {u.accountNumber}
                     </td>
                     <td style={{ padding: '12px 14px', fontWeight: 700, fontFamily: 'var(--font-mono)', color: 'var(--accent-emerald)' }}>
-                      ₦{Number(u.balance || 0).toLocaleString()}
+                      ${Number(u.balance || 0).toLocaleString()}
                     </td>
                     <td style={{ padding: '12px 14px' }}>
                       <span className={`badge ${u.role === 'admin' ? 'badge-admin' : 'badge-user'}`}>
@@ -402,7 +402,7 @@ export default function AdminPanel() {
                         </div>
                       </td>
                       <td style={{ padding: '12px 14px', fontWeight: 700, fontFamily: 'var(--font-mono)', color: '#fbbf24' }}>
-                        ₦{Number(l.amount).toLocaleString()}
+                        ${Number(l.amount).toLocaleString()}
                       </td>
                       <td style={{ padding: '12px 14px' }}>
                         {l.durationMonths} months
@@ -483,10 +483,10 @@ export default function AdminPanel() {
                       {t.description}
                     </td>
                     <td style={{ padding: '12px 14px', fontWeight: 600, fontFamily: 'var(--font-mono)' }}>
-                      ₦{Number(t.amount).toLocaleString()}
+                      ${Number(t.amount).toLocaleString()}
                     </td>
                     <td style={{ padding: '12px 14px', color: 'var(--text-muted)' }}>
-                      {t.counterparty?.name || 'CashVersal Apex'}
+                      {t.counterparty?.name || 'MiniBank Apex'}
                     </td>
                     <td style={{ padding: '12px 14px', fontSize: '0.75rem', color: 'var(--text-dim)' }}>
                       {new Date(t.createdAt).toLocaleString()}
@@ -528,7 +528,7 @@ export default function AdminPanel() {
                 <input
                   type="email"
                   required
-                  placeholder="rachel@cashversal.com"
+                  placeholder="rachel@minibank.com"
                   value={newUserForm.email}
                   onChange={(e) => setNewUserForm({ ...newUserForm, email: e.target.value })}
                   className="form-input"
@@ -560,7 +560,7 @@ export default function AdminPanel() {
               </div>
 
               <div className="form-group" style={{ marginBottom: 24 }}>
-                <label className="form-label">Initial Balance Deposit (₦)</label>
+                <label className="form-label">Initial Balance Deposit ($ USD)</label>
                 <input
                   type="number"
                   min="0"
@@ -621,7 +621,7 @@ export default function AdminPanel() {
               </div>
 
               <div className="form-group">
-                <label className="form-label">Account Balance (₦)</label>
+                <label className="form-label">Account Balance ($ USD)</label>
                 <input
                   type="number"
                   required

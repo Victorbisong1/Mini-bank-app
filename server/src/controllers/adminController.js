@@ -2,7 +2,7 @@ const User = require('../models/Users')
 const Transaction = require('../models/Transaction')
 const Loan = require('../models/Loan')
 const bcrypt = require('bcryptjs')
-const {generateUniqueAccountNumber} = helpers = require('../utils/helpers');
+const {generateUniqueAccountNumber} = helpers = require('../../../utils/helpers');
 
 const getstats = async(req, res) => {
     try {

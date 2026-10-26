@@ -1,7 +1,7 @@
 const User = require('../models/Users');
 const Transaction = require('../models/Transaction');
 const Loan = require('../models/Loan');
-const { generateMeterToken } = helpers = require('../utils/helpers');;
+const { generateMeterToken } = helpers = require('../../../utils/helpers');;
 
 // @route   POST /api/bills/airtime
 const airtime = async(req, res) => {

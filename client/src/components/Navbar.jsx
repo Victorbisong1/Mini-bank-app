@@ -69,7 +69,7 @@ export default function Navbar({ activeView, setActiveView }) {
               alignItems: 'center',
               gap: 6
             }}>
-              Cash<span style={{ color: 'var(--accent-emerald)' }}>Versal</span>
+              Mini<span style={{ color: 'var(--accent-emerald)' }}>Bank</span>
             </div>
             <div style={{ fontSize: '0.72rem', color: 'var(--text-dim)', letterSpacing: '0.04em' }}>
               SECURE PLATFORM

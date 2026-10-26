@@ -7,7 +7,7 @@ export default function LoanModal({ isOpen, onClose }) {
   const dispatch = useDispatch();
   const { actionLoading, error, actionSuccess } = useSelector((state) => state.account);
 
-  const [amount, setAmount] = useState('50000');
+  const [amount, setAmount] = useState('500');
   const [durationMonths, setDurationMonths] = useState('3');
   const [purpose, setPurpose] = useState('');
 
@@ -15,7 +15,7 @@ export default function LoanModal({ isOpen, onClose }) {
 
   const handleClose = () => {
     dispatch(clearAccountStatus());
-    setAmount('50000');
+    setAmount('500');
     setPurpose('');
     onClose();
   };
@@ -107,19 +107,19 @@ export default function LoanModal({ isOpen, onClose }) {
             </div>
 
             <div className="form-group">
-              <label className="form-label">Loan Amount (₦)</label>
+              <label className="form-label">Loan Amount ($ USD)</label>
               <input
                 type="number"
                 required
-                min="10000"
-                max="5000000"
+                min="50"
+                max="50000"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 className="form-input"
                 style={{ fontSize: '1.1rem', fontWeight: 600 }}
               />
               <div style={{ display: 'flex', gap: 6, marginTop: 8 }}>
-                {[25000, 50000, 100000, 250000, 500000].map((preset) => (
+                {[250, 500, 1000, 2500, 5000].map((preset) => (
                   <button
                     key={preset}
                     type="button"
@@ -127,7 +127,7 @@ export default function LoanModal({ isOpen, onClose }) {
                     className="btn btn-secondary"
                     style={{ padding: '4px 10px', fontSize: '0.75rem' }}
                   >
-                    ₦{preset >= 100000 ? `${preset / 1000}k` : preset.toLocaleString()}
+                    ${preset}
                   </button>
                 ))}
               </div>

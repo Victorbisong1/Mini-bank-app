@@ -75,7 +75,7 @@ export default function AuthView() {
             letterSpacing: '-0.02em',
             marginBottom: 6
           }}>
-            Cash<span style={{ color: 'var(--accent-emerald)' }}>Versal</span>
+            Mini<span style={{ color: 'var(--accent-emerald)' }}>Bank</span>
           </h1>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>
             {isRegister ? 'Create your account with a unique 10-digit account number' : 'Welcome back, sign in to access your digital account'}
@@ -153,7 +153,7 @@ export default function AuthView() {
               type="email"
               name="email"
               required
-              placeholder="user@cashversal.com"
+              placeholder="user@minibank.com"
               value={formData.email}
               onChange={handleInputChange}
               className="form-input"
@@ -207,7 +207,7 @@ export default function AuthView() {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
             <button
               type="button"
-              onClick={() => handleQuickLogin('admin@cashversal.com', 'admin123')}
+              onClick={() => handleQuickLogin('admin@minibank.com', 'admin123')}
               className="btn btn-secondary"
               style={{ padding: '8px 10px', fontSize: '0.775rem', justifyContent: 'flex-start', background: 'rgba(168, 85, 247, 0.08)', borderColor: 'rgba(168, 85, 247, 0.25)' }}
             >
@@ -216,30 +216,30 @@ export default function AuthView() {
             </button>
             <button
               type="button"
-              onClick={() => handleQuickLogin('john@cashversal.com', 'user123')}
+              onClick={() => handleQuickLogin('john@minibank.com', 'user123')}
               className="btn btn-secondary"
               style={{ padding: '8px 10px', fontSize: '0.775rem', justifyContent: 'flex-start' }}
             >
               <UserCheck size={14} color="#60a5fa" />
-              <span>John Doe (₦2.5m)</span>
+              <span>John Doe ($2.5k)</span>
             </button>
             <button
               type="button"
-              onClick={() => handleQuickLogin('sarah@cashversal.com', 'user123')}
+              onClick={() => handleQuickLogin('sarah@minibank.com', 'user123')}
               className="btn btn-secondary"
               style={{ padding: '8px 10px', fontSize: '0.775rem', justifyContent: 'flex-start' }}
             >
               <UserCheck size={14} color="#34d399" />
-              <span>Sarah C. (₦1.8m)</span>
+              <span>Sarah C. ($1.8k)</span>
             </button>
             <button
               type="button"
-              onClick={() => handleQuickLogin('alex@cashversal.com', 'user123')}
+              onClick={() => handleQuickLogin('alex@minibank.com', 'user123')}
               className="btn btn-secondary"
               style={{ padding: '8px 10px', fontSize: '0.775rem', justifyContent: 'flex-start' }}
             >
               <UserCheck size={14} color="#f59e0b" />
-              <span>Alex R. (₦750k)</span>
+              <span>Alex R. ($750)</span>
             </button>
           </div>
         </div>

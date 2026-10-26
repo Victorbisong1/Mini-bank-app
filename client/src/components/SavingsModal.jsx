@@ -7,7 +7,7 @@ export default function SavingsModal({ isOpen, onClose }) {
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const [amount, setAmount] = useState('');
-  const [mode, setMode] = useState('DEPOSIT'); 
+  const [mode, setMode] = useState('DEPOSIT'); // 'DEPOSIT' or 'WITHDRAW'
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
@@ -32,7 +32,7 @@ export default function SavingsModal({ isOpen, onClose }) {
       setLoading(true);
       setError('');
 
-      setSuccessMsg(`Successfully ${mode === 'DEPOSIT' ? 'deposited to' : 'withdrawn from'} CashVersal Vault!`);
+      setSuccessMsg(`Successfully ${mode === 'DEPOSIT' ? 'deposited to' : 'withdrawn from'} OWealth Vault!`);
       
       setTimeout(() => {
         dispatch(fetchDashboard());
@@ -68,7 +68,7 @@ export default function SavingsModal({ isOpen, onClose }) {
               <PiggyBank size={20} />
             </div>
             <div>
-              <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700 }}>CashVersal Vault</h3>
+              <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700 }}>MiniBank Vault</h3>
               <span style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>Earn up to 15% annual interest</span>
             </div>
           </div>
@@ -121,7 +121,7 @@ export default function SavingsModal({ isOpen, onClose }) {
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <div>
             <label style={{ fontSize: '0.78rem', color: 'var(--text-dim)', marginBottom: 6, display: 'block' }}>
-              {mode === 'DEPOSIT' ? 'Amount to Save (₦)' : 'Amount to Withdraw (₦)'}
+              {mode === 'DEPOSIT' ? 'Amount to Save ($)' : 'Amount to Withdraw ($)'}
             </label>
             <input
               type="number"
@@ -133,7 +133,7 @@ export default function SavingsModal({ isOpen, onClose }) {
               min="1"
             />
             <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: 6, textAlign: 'right' }}>
-              Available: ₦{mode === 'DEPOSIT' ? (user?.balance || 0).toLocaleString() : '0.00'}
+              Available: ${mode === 'DEPOSIT' ? (user?.balance || 0).toLocaleString() : '0.00'}
             </div>
           </div>
 

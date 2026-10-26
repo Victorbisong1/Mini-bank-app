@@ -1,7 +1,7 @@
 const User = require('../models/Users');
 const Transaction = require('../models/Transaction');
 const Loan = require('../models/Loan');
-const { generateUniqueAccountNumber } = helpers = require('../utils/helpers');;
+const { generateUniqueAccountNumber } = helpers = require('../../../utils/helpers');;
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken')
 
