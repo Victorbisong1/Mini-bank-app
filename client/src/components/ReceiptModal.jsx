@@ -47,7 +47,7 @@ export default function ReceiptModal({ transaction, onClose }) {
             fontFamily: 'var(--font-mono)',
             marginBottom: 4
           }}>
-            {isCredit ? '+' : '-'}${Number(transaction.amount || 0).toLocaleString()}
+            {isCredit ? '+' : '-'}₦{Number(transaction.amount || 0).toLocaleString()}
           </div>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: '#34d399', fontSize: '0.8125rem' }}>
             <CheckCircle size={14} />
@@ -70,7 +70,7 @@ export default function ReceiptModal({ transaction, onClose }) {
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <span style={{ color: 'var(--text-muted)' }}>Counterparty</span>
             <span style={{ fontWeight: 500 }}>
-              {transaction.counterparty?.name || 'MiniBank Apex'}
+              {transaction.counterparty?.name || 'CashVersal Apex'}
             </span>
           </div>
 
@@ -99,7 +99,7 @@ export default function ReceiptModal({ transaction, onClose }) {
             <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid var(--border)', paddingTop: 10 }}>
               <span style={{ color: 'var(--text-muted)' }}>Balance After</span>
               <span style={{ fontWeight: 600, fontFamily: 'var(--font-mono)' }}>
-                ${Number(transaction.balanceAfter).toLocaleString()}
+                ₦{Number(transaction.balanceAfter).toLocaleString()}
               </span>
             </div>
           )}

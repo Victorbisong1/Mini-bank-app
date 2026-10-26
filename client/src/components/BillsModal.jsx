@@ -11,11 +11,11 @@ const TELCOS = [
 ];
 
 const DATA_PLANS = [
-  { id: 'p1', name: '1.5GB Monthly Plan', amount: 3 },
-  { id: 'p2', name: '4.5GB Monthly Plan', amount: 8 },
-  { id: 'p3', name: '12GB High-Speed Plan', amount: 18 },
-  { id: 'p4', name: '30GB Pro Data Plan', amount: 35 },
-  { id: 'p5', name: '75GB Unlimited Ultra', amount: 70 }
+  { id: 'p1', name: '1.5GB Monthly Plan', amount: 1500 },
+  { id: 'p2', name: '4.5GB Monthly Plan', amount: 3500 },
+  { id: 'p3', name: '12GB High-Speed Plan', amount: 7500 },
+  { id: 'p4', name: '30GB Pro Data Plan', amount: 15000 },
+  { id: 'p5', name: '75GB Unlimited Ultra', amount: 30000 }
 ];
 
 const DISCOS = [
@@ -36,7 +36,7 @@ export default function BillsModal({ isOpen, onClose }) {
   // Airtime state
   const [airtimeProvider, setAirtimeProvider] = useState('mtn');
   const [airtimePhone, setAirtimePhone] = useState('');
-  const [airtimeAmount, setAirtimeAmount] = useState('10');
+  const [airtimeAmount, setAirtimeAmount] = useState('1000');
 
   // Data state
   const [dataProvider, setDataProvider] = useState('mtn');
@@ -47,7 +47,7 @@ export default function BillsModal({ isOpen, onClose }) {
   const [disco, setDisco] = useState(DISCOS[0].id);
   const [meterNumber, setMeterNumber] = useState('');
   const [meterType, setMeterType] = useState('Prepaid');
-  const [electricityAmount, setElectricityAmount] = useState('25');
+  const [electricityAmount, setElectricityAmount] = useState('5000');
   const [generatedToken, setGeneratedToken] = useState('');
   const [copiedToken, setCopiedToken] = useState(false);
 
@@ -294,7 +294,7 @@ export default function BillsModal({ isOpen, onClose }) {
                   <input
                     type="tel"
                     required
-                    placeholder="e.g. +1 555 019 2834"
+                    placeholder="e.g. 08012345678"
                     value={airtimePhone}
                     onChange={(e) => setAirtimePhone(e.target.value)}
                     className="form-input"
@@ -302,18 +302,18 @@ export default function BillsModal({ isOpen, onClose }) {
                 </div>
 
                 <div className="form-group" style={{ marginBottom: 24 }}>
-                  <label className="form-label">Recharge Amount ($ USD)</label>
+                  <label className="form-label">Recharge Amount (₦)</label>
                   <input
                     type="number"
                     required
-                    min="1"
+                    min="100"
                     max={user?.balance || 0}
                     value={airtimeAmount}
                     onChange={(e) => setAirtimeAmount(e.target.value)}
                     className="form-input"
                   />
                   <div style={{ display: 'flex', gap: 6, marginTop: 8 }}>
-                    {[5, 10, 20, 50].map((amt) => (
+                    {[500, 1000, 2000, 5000].map((amt) => (
                       <button
                         key={amt}
                         type="button"
@@ -321,7 +321,7 @@ export default function BillsModal({ isOpen, onClose }) {
                         className="btn btn-secondary"
                         style={{ padding: '4px 10px', fontSize: '0.75rem' }}
                       >
-                        ${amt}
+                        ₦{amt}
                       </button>
                     ))}
                   </div>
@@ -333,7 +333,7 @@ export default function BillsModal({ isOpen, onClose }) {
                   className="btn btn-primary"
                   style={{ width: '100%', padding: '12px 0' }}
                 >
-                  {actionLoading ? 'Purchasing...' : `Recharge $${airtimeAmount} Airtime`}
+                  {actionLoading ? 'Purchasing...' : `Recharge ₦${Number(airtimeAmount || 0).toLocaleString()} Airtime`}
                 </button>
               </form>
             )}
@@ -366,7 +366,7 @@ export default function BillsModal({ isOpen, onClose }) {
                   >
                     {DATA_PLANS.map((p) => (
                       <option key={p.id} value={p.id}>
-                        {p.name} — ${p.amount}
+                        {p.name} — ₦{p.amount.toLocaleString()}
                       </option>
                     ))}
                   </select>
@@ -377,7 +377,7 @@ export default function BillsModal({ isOpen, onClose }) {
                   <input
                     type="tel"
                     required
-                    placeholder="e.g. +1 555 019 2834"
+                    placeholder="e.g. 08012345678"
                     value={dataPhone}
                     onChange={(e) => setDataPhone(e.target.value)}
                     className="form-input"
@@ -390,7 +390,7 @@ export default function BillsModal({ isOpen, onClose }) {
                   className="btn btn-primary"
                   style={{ width: '100%', padding: '12px 0' }}
                 >
-                  {actionLoading ? 'Purchasing...' : `Buy ${selectedPlan.name} ($${selectedPlan.amount})`}
+                  {actionLoading ? 'Purchasing...' : `Buy ${selectedPlan.name} (₦${selectedPlan.amount.toLocaleString()})`}
                 </button>
               </form>
             )}
@@ -449,11 +449,11 @@ export default function BillsModal({ isOpen, onClose }) {
                 </div>
 
                 <div className="form-group" style={{ marginBottom: 24 }}>
-                  <label className="form-label">Amount ($ USD)</label>
+                  <label className="form-label">Amount (₦)</label>
                   <input
                     type="number"
                     required
-                    min="5"
+                    min="1000"
                     max={user?.balance || 0}
                     value={electricityAmount}
                     onChange={(e) => setElectricityAmount(e.target.value)}
@@ -467,7 +467,7 @@ export default function BillsModal({ isOpen, onClose }) {
                   className="btn btn-primary"
                   style={{ width: '100%', padding: '12px 0' }}
                 >
-                  {actionLoading ? 'Processing...' : `Pay $${electricityAmount} Electricity`}
+                  {actionLoading ? 'Processing...' : `Pay ₦${Number(electricityAmount || 0).toLocaleString()} Electricity`}
                 </button>
               </form>
             )}

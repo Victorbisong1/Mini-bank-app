@@ -4,14 +4,14 @@ import { withdrawFunds, clearAccountStatus } from '../redux/accountSlice';
 import { X, ArrowDownRight, CheckCircle2, AlertCircle } from 'lucide-react';
 
 const BANKS = [
-  'JPMorgan Chase Bank',
-  'Bank of America',
-  'Wells Fargo',
-  'Citibank',
-  'Apex International Bank',
   'Zenith Bank',
   'GTBank (Guaranty Trust)',
-  'Barclays'
+  'Access Bank',
+  'United Bank for Africa (UBA)',
+  'First Bank of Nigeria',
+  'OPay',
+  'Moniepoint',
+  'Kuda Bank'
 ];
 
 export default function WithdrawModal({ isOpen, onClose }) {
@@ -115,7 +115,7 @@ export default function WithdrawModal({ isOpen, onClose }) {
             }}>
               <span style={{ fontSize: '0.8125rem', color: 'var(--text-muted)' }}>Available Balance</span>
               <span style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--accent-emerald)', fontFamily: 'var(--font-mono)' }}>
-                ${(user?.balance || 0).toLocaleString()}
+                ₦{(user?.balance || 0).toLocaleString()}
               </span>
             </div>
 
@@ -157,7 +157,7 @@ export default function WithdrawModal({ isOpen, onClose }) {
             </div>
 
             <div className="form-group" style={{ marginBottom: 24 }}>
-              <label className="form-label">Withdrawal Amount ($ USD)</label>
+              <label className="form-label">Withdrawal Amount (₦)</label>
               <input
                 type="number"
                 required
@@ -181,7 +181,7 @@ export default function WithdrawModal({ isOpen, onClose }) {
                 className="btn btn-primary"
                 style={{ flex: 2 }}
               >
-                {actionLoading ? 'Processing...' : `Withdraw $${Number(amount || 0).toLocaleString()}`}
+                {actionLoading ? 'Processing...' : `Withdraw ₦${Number(amount || 0).toLocaleString()}`}
               </button>
             </div>
           </form>
