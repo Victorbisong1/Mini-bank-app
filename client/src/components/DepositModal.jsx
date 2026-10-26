@@ -7,14 +7,14 @@ export default function DepositModal({ isOpen, onClose }) {
   const dispatch = useDispatch();
   const { actionLoading, error, actionSuccess } = useSelector((state) => state.account);
 
-  const [amount, setAmount] = useState('500');
+  const [amount, setAmount] = useState('5000');
   const [channel, setChannel] = useState('Instant Card Checkout');
 
   if (!isOpen) return null;
 
   const handleClose = () => {
     dispatch(clearAccountStatus());
-    setAmount('500');
+    setAmount('5000');
     onClose();
   };
 
@@ -92,25 +92,25 @@ export default function DepositModal({ isOpen, onClose }) {
                 onChange={(e) => setChannel(e.target.value)}
                 className="form-select"
               >
-                <option value="Instant Card Checkout">Instant Card Checkout (Visa/Mastercard)</option>
-                <option value="Bank Direct Wire">Bank Direct Wire</option>
-                <option value="Crypto Deposit">Crypto / Stablecoin Gateway</option>
+                <option value="Instant Card Checkout">Instant Card Checkout (Verve/Mastercard/Visa)</option>
+                <option value="Bank Direct Wire">Bank Direct Wire / Transfer</option>
+                <option value="USSD Quick Pay">USSD Quick Pay</option>
               </select>
             </div>
 
             <div className="form-group" style={{ marginBottom: 24 }}>
-              <label className="form-label">Amount ($ USD)</label>
+              <label className="form-label">Amount (₦)</label>
               <input
                 type="number"
                 required
-                min="10"
+                min="100"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 className="form-input"
                 style={{ fontSize: '1.1rem', fontWeight: 600 }}
               />
               <div style={{ display: 'flex', gap: 6, marginTop: 8 }}>
-                {[100, 500, 1000, 2500].map((preset) => (
+                {[5000, 10000, 25000, 50000].map((preset) => (
                   <button
                     key={preset}
                     type="button"
@@ -118,7 +118,7 @@ export default function DepositModal({ isOpen, onClose }) {
                     className="btn btn-secondary"
                     style={{ padding: '4px 10px', fontSize: '0.75rem' }}
                   >
-                    +${preset}
+                    +₦{preset.toLocaleString()}
                   </button>
                 ))}
               </div>
@@ -134,7 +134,7 @@ export default function DepositModal({ isOpen, onClose }) {
                 className="btn btn-primary"
                 style={{ flex: 2 }}
               >
-                {actionLoading ? 'Processing...' : `Deposit $${Number(amount || 0).toLocaleString()}`}
+                {actionLoading ? 'Processing...' : `Deposit ₦${Number(amount || 0).toLocaleString()}`}
               </button>
             </div>
           </form>

@@ -4,14 +4,16 @@ import { withdrawFunds, clearAccountStatus } from '../redux/accountSlice';
 import { X, ArrowDownRight, CheckCircle2, AlertCircle } from 'lucide-react';
 
 const BANKS = [
-  'JPMorgan Chase Bank',
-  'Bank of America',
-  'Wells Fargo',
-  'Citibank',
-  'Apex International Bank',
   'Zenith Bank',
   'GTBank (Guaranty Trust)',
-  'Barclays'
+  'Access Bank',
+  'First Bank of Nigeria',
+  'United Bank for Africa (UBA)',
+  'OPay Digital Services',
+  'Moniepoint MFB',
+  'Kuda Bank',
+  'Fidelity Bank',
+  'Stanbic IBTC Bank'
 ];
 
 export default function WithdrawModal({ isOpen, onClose }) {
@@ -115,7 +117,7 @@ export default function WithdrawModal({ isOpen, onClose }) {
             }}>
               <span style={{ fontSize: '0.8125rem', color: 'var(--text-muted)' }}>Available Balance</span>
               <span style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--accent-emerald)', fontFamily: 'var(--font-mono)' }}>
-                ${(user?.balance || 0).toLocaleString()}
+                ₦{(user?.balance || 0).toLocaleString()}
               </span>
             </div>
 
@@ -137,7 +139,8 @@ export default function WithdrawModal({ isOpen, onClose }) {
               <input
                 type="text"
                 required
-                placeholder="e.g. 0291823910"
+                maxLength={10}
+                placeholder="e.g. 0123456789"
                 value={accountNumber}
                 onChange={(e) => setAccountNumber(e.target.value)}
                 className="form-input"
@@ -157,11 +160,11 @@ export default function WithdrawModal({ isOpen, onClose }) {
             </div>
 
             <div className="form-group" style={{ marginBottom: 24 }}>
-              <label className="form-label">Withdrawal Amount ($ USD)</label>
+              <label className="form-label">Withdrawal Amount (₦)</label>
               <input
                 type="number"
                 required
-                min="1"
+                min="100"
                 max={user?.balance || 0}
                 placeholder="0.00"
                 value={amount}
@@ -181,7 +184,7 @@ export default function WithdrawModal({ isOpen, onClose }) {
                 className="btn btn-primary"
                 style={{ flex: 2 }}
               >
-                {actionLoading ? 'Processing...' : `Withdraw $${Number(amount || 0).toLocaleString()}`}
+                {actionLoading ? 'Processing...' : `Withdraw ₦${Number(amount || 0).toLocaleString()}`}
               </button>
             </div>
           </form>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { sendTransfer, clearAccountStatus } from '../redux/accountSlice';
 import api from '../services/api';
@@ -139,7 +139,7 @@ export default function TransferModal({ isOpen, onClose }) {
             }}>
               <span style={{ fontSize: '0.8125rem', color: 'var(--text-muted)' }}>Available Balance</span>
               <span style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--accent-emerald)', fontFamily: 'var(--font-mono)' }}>
-                ${(user?.balance || 0).toLocaleString()}
+                ₦{(user?.balance || 0).toLocaleString()}
               </span>
             </div>
 
@@ -192,7 +192,7 @@ export default function TransferModal({ isOpen, onClose }) {
 
             {/* Amount */}
             <div className="form-group">
-              <label className="form-label">Amount ($ USD)</label>
+              <label className="form-label">Amount (₦)</label>
               <input
                 type="number"
                 required
@@ -207,7 +207,7 @@ export default function TransferModal({ isOpen, onClose }) {
 
               {/* Quick Preset Buttons */}
               <div style={{ display: 'flex', gap: 6, marginTop: 8 }}>
-                {[50, 100, 250, 500].map((preset) => (
+                {[5000, 10000, 25000, 50000].map((preset) => (
                   <button
                     key={preset}
                     type="button"
@@ -215,7 +215,7 @@ export default function TransferModal({ isOpen, onClose }) {
                     className="btn btn-secondary"
                     style={{ padding: '4px 10px', fontSize: '0.75rem', borderRadius: 6 }}
                   >
-                    ${preset}
+                    ₦{preset.toLocaleString()}
                   </button>
                 ))}
                 <button
@@ -252,7 +252,7 @@ export default function TransferModal({ isOpen, onClose }) {
                 className="btn btn-primary"
                 style={{ flex: 2 }}
               >
-                {actionLoading ? 'Processing...' : `Send $${Number(amount || 0).toLocaleString()}`}
+                {actionLoading ? 'Processing...' : `Send ₦${Number(amount || 0).toLocaleString()}`}
               </button>
             </div>
           </form>
