@@ -150,7 +150,6 @@ export default function Dashboard() {
           </div>
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              MiniBank Vault
               <span
                 style={{
                   fontSize: "0.9rem",
