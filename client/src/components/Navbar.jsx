@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../redux/authSlice';
 import { 
-  Building2, 
+  Wallet, 
   Copy, 
   Check, 
   LogOut, 
@@ -56,7 +56,7 @@ export default function Navbar({ activeView, setActiveView }) {
             color: '#fff',
             boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)'
           }}>
-            <Building2 size={20} />
+            <Wallet size={20} />
           </div>
           <div>
             <div style={{ 
