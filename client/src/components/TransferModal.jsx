@@ -87,10 +87,9 @@ export default function TransferModal({ isOpen, onClose }) {
     onClose();
   };
 
-  // ✅ Fixed: Matches form onSubmit event correctly to open PIN modal
-  const handleOpenPin = (e) => {
-    e.preventDefault();
-    if (!recipientAcc || !amount) return;
+  // Direct click handler to open the PIN modal
+  const handleOpenPin = () => {
+    if (!recipientAcc || !amount || Number(amount) <= 0) return;
     setShowPinModal(true);
   };
 
@@ -142,9 +141,8 @@ export default function TransferModal({ isOpen, onClose }) {
             </button>
           </div>
 
-          {/* Status Alerts */}
           {error && (
-            <div className="toast-error">
+            <div className="toast-error" style={{ marginBottom: 12 }}>
               <AlertCircle size={16} />
               <span>{error}</span>
             </div>
@@ -174,8 +172,8 @@ export default function TransferModal({ isOpen, onClose }) {
               </button>
             </div>
           ) : (
-            <form onSubmit={handleOpenPin}>
-              {/* Available balance tip */}
+            <div>
+              {/* Available Balance Box */}
               <div style={{
                 background: 'rgba(255, 255, 255, 0.03)',
                 border: '1px solid var(--border)',
@@ -255,7 +253,6 @@ export default function TransferModal({ isOpen, onClose }) {
                   )}
                 </div>
 
-                {/* Recipient Lookup Result */}
                 {recipientInfo && (
                   <div style={{
                     marginTop: 6,
@@ -283,7 +280,7 @@ export default function TransferModal({ isOpen, onClose }) {
 
               {/* Amount */}
               <div className="form-group">
-                <label className="form-label">Amount (₦)</label>
+                <label className="form-label">Transfer Amount (₦)</label>
                 <input
                   type="number"
                   required
@@ -304,7 +301,7 @@ export default function TransferModal({ isOpen, onClose }) {
                       type="button"
                       onClick={() => setAmount(preset.toString())}
                       className="btn btn-secondary"
-                      style={{ padding: '4px 10px', fontSize: '0.75rem', borderRadius: 6 }}
+                      style={{ padding: '4px 10px', fontSize: '0.75rem', borderRadius: 6, cursor: 'pointer' }}
                     >
                       ₦{preset.toLocaleString()}
                     </button>
@@ -313,14 +310,14 @@ export default function TransferModal({ isOpen, onClose }) {
                     type="button"
                     onClick={() => setAmount(String(user?.balance || 0))}
                     className="btn btn-secondary"
-                    style={{ padding: '4px 10px', fontSize: '0.75rem', borderRadius: 6, color: 'var(--accent-emerald)' }}
+                    style={{ padding: '4px 10px', fontSize: '0.75rem', borderRadius: 6, color: 'var(--accent-emerald)', cursor: 'pointer' }}
                   >
                     All
                   </button>
                 </div>
               </div>
 
-              {/* Description / Note */}
+              {/* Reference Note */}
               <div className="form-group" style={{ marginBottom: 24 }}>
                 <label className="form-label">Reference Note (Optional)</label>
                 <input
@@ -332,21 +329,22 @@ export default function TransferModal({ isOpen, onClose }) {
                 />
               </div>
 
-              {/* Submit */}
+              {/* Action Buttons */}
               <div style={{ display: 'flex', gap: 10 }}>
-                <button type="button" onClick={handleClose} className="btn btn-secondary" style={{ flex: 1 }}>
+                <button type="button" onClick={handleClose} className="btn btn-secondary" style={{ flex: 1, cursor: 'pointer' }}>
                   Cancel
                 </button>
                 <button
-                  type="submit"
+                  type="button"
+                  onClick={handleOpenPin}
                   disabled={actionLoading || !amount || Number(amount) <= 0 || Number(amount) > (user?.balance || 0) || !recipientAcc}
                   className="btn btn-primary"
-                  style={{ flex: 2 }}
+                  style={{ flex: 2, cursor: 'pointer' }}
                 >
                   {actionLoading ? 'Processing...' : `Send ₦${Number(amount || 0).toLocaleString()}`}
                 </button>
               </div>
-            </form>
+            </div>
           )}
         </div>
       </div>

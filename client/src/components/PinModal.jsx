@@ -18,6 +18,21 @@ export default function PinModal({ isOpen, onClose, onSuccess, amount, recipient
       const nextInput = document.getElementById(`pin-digit-${index + 1}`);
       if (nextInput) nextInput.focus();
     }
+
+    // Auto-submit when all 4 digits are filled
+    if (newPin.every(d => d !== '')) {
+      const enteredPin = newPin.join('');
+      if (enteredPin === DEMO_PIN) {
+        setError('');
+        setPin(['', '', '', '']);
+        onSuccess();
+      } else {
+        setError('Incorrect 4-digit PIN. (Use 1234 for testing)');
+        setPin(['', '', '', '']);
+        const firstInput = document.getElementById('pin-digit-0');
+        if (firstInput) firstInput.focus();
+      }
+    }
   };
 
   const handleKeyDown = (e, index) => {
@@ -43,10 +58,10 @@ export default function PinModal({ isOpen, onClose, onSuccess, amount, recipient
   };
 
   return (
-    <div className="modal-overlay" style={{ zIndex: 200 }}>
+    <div className="modal-overlay" style={{ zIndex: 200 }} onClick={onClose}>
       <div className="modal-container" style={{ maxWidth: 380, textAlign: 'center' }} onClick={(e) => e.stopPropagation()}>
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
-          <button onClick={onClose} className="btn-outline" style={{ padding: 4, borderRadius: 6 }}>
+          <button type="button" onClick={onClose} className="btn-outline" style={{ padding: 4, borderRadius: 6, cursor: 'pointer' }}>
             <X size={16} />
           </button>
         </div>
@@ -109,7 +124,7 @@ export default function PinModal({ isOpen, onClose, onSuccess, amount, recipient
             type="submit"
             disabled={pin.some(d => !d)}
             className="btn btn-primary"
-            style={{ width: '100%', padding: '12px 0' }}
+            style={{ width: '100%', padding: '12px 0', cursor: 'pointer' }}
           >
             Confirm & Complete
           </button>
