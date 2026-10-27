@@ -99,16 +99,21 @@ export default function TransferModal({ isOpen, onClose }) {
   const handlePinSuccess = () => {
     setShowPinModal(false);
 
-    // Automatically save beneficiary to localStorage on successful initiation
+    // Automatically save beneficiary to localStorage
     if (recipientAcc) {
       saveBeneficiary(recipientAcc.trim(), recipientInfo?.name || `Acct ${recipientAcc}`);
     }
 
+    // Dispatch the transfer action and handle success response cleanly
     dispatch(sendTransfer({
       recipientAccountNumber: recipientAcc.trim(),
       amount: Number(amount),
       description: description.trim()
-    }));
+    })).then((res) => {
+      if (!res.error) {
+        // Success handled by Redux state (actionSuccess will trigger the success screen)
+      }
+    });
   };
 
   return (
@@ -296,7 +301,7 @@ export default function TransferModal({ isOpen, onClose }) {
 
                 {/* Quick Preset Buttons */}
                 <div style={{ display: 'flex', gap: 6, marginTop: 8 }}>
-                  {[5000, 10000, 20000, 50000].map((preset) => (
+                  {[500, 1000, 2000, 5000].map((preset) => (
                     <button
                       key={preset}
                       type="button"
@@ -304,7 +309,7 @@ export default function TransferModal({ isOpen, onClose }) {
                       className="btn btn-secondary"
                       style={{ padding: '4px 10px', fontSize: '0.75rem', borderRadius: 6 }}
                     >
-                      ₦{preset >= 100000 ? `${preset / 1000}k` : preset.toLocaleString()}
+                      ₦{preset.toLocaleString()}
                     </button>
                   ))}
                   <button
