@@ -59,13 +59,12 @@ export default function TransferModal({ isOpen, onClose }) {
   const saveBeneficiary = (accountNumber, name) => {
     const existing = beneficiaries.find(b => b.accountNumber === accountNumber);
     if (!existing) {
-      const updated = [{ accountNumber, name }, ...beneficiaries].slice(0, 5); // Keep top 5
+      const updated = [{ accountNumber, name }, ...beneficiaries].slice(0, 5);
       setBeneficiaries(updated);
       localStorage.setItem('cashversal_beneficiaries', JSON.stringify(updated));
     }
   };
 
-  // Remove beneficiary from localStorage helper
   const removeBeneficiary = (accountNumber, e) => {
     e.stopPropagation();
     const updated = beneficiaries.filter(b => b.accountNumber !== accountNumber);
@@ -88,30 +87,28 @@ export default function TransferModal({ isOpen, onClose }) {
     onClose();
   };
 
-  // 1. Triggered when clicking Send form button -> Opens PIN modal
-  const handleFormSubmit = (e) => {
+  // ✅ Fixed: Matches form onSubmit event correctly to open PIN modal
+  const handleOpenPin = (e) => {
     e.preventDefault();
-    if (!recipientInfo && !recipientAcc) return;
+    if (!recipientAcc || !amount) return;
     setShowPinModal(true);
   };
 
-  // 2. Triggered when 4-digit PIN (1234) is successfully verified
+  // Triggered when 4-digit PIN (1234) is successfully verified
   const handlePinSuccess = () => {
     setShowPinModal(false);
 
-    // Automatically save beneficiary to localStorage
     if (recipientAcc) {
       saveBeneficiary(recipientAcc.trim(), recipientInfo?.name || `Acct ${recipientAcc}`);
     }
 
-    // Dispatch the transfer action and handle success response cleanly
     dispatch(sendTransfer({
       recipientAccountNumber: recipientAcc.trim(),
       amount: Number(amount),
       description: description.trim()
     })).then((res) => {
       if (!res.error) {
-        // Success handled by Redux state (actionSuccess will trigger the success screen)
+        // Success handled by Redux state
       }
     });
   };
@@ -177,7 +174,7 @@ export default function TransferModal({ isOpen, onClose }) {
               </button>
             </div>
           ) : (
-            <form onSubmit={handleFormSubmit}>
+            <form onSubmit={handleOpenPin}>
               {/* Available balance tip */}
               <div style={{
                 background: 'rgba(255, 255, 255, 0.03)',
