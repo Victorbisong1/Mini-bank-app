@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { sendTransfer, clearAccountStatus } from '../redux/accountSlice';
 import api from '../services/api';
-import PinModal from './PinModal';
 import { X, Send, User, CheckCircle2, AlertCircle, Loader2, Star, Trash2 } from 'lucide-react';
 
 export default function TransferModal({ isOpen, onClose }) {
@@ -22,9 +21,6 @@ export default function TransferModal({ isOpen, onClose }) {
     const saved = localStorage.getItem('cashversal_beneficiaries');
     return saved ? JSON.parse(saved) : [];
   });
-
-  // State to control PIN modal visibility
-  const [showPinModal, setShowPinModal] = useState(false);
 
   // Lookup recipient when account number is 10 digits
   useEffect(() => {
@@ -83,19 +79,13 @@ export default function TransferModal({ isOpen, onClose }) {
     setAmount('');
     setDescription('');
     setLookupError('');
-    setShowPinModal(false);
     onClose();
   };
 
-  // Direct click handler to open the PIN modal
-  const handleOpenPin = () => {
+  // Direct transfer submission without PIN
+  const handleSubmit = (e) => {
+    e.preventDefault();
     if (!recipientAcc || !amount || Number(amount) <= 0) return;
-    setShowPinModal(true);
-  };
-
-  // Triggered when 4-digit PIN (1234) is successfully verified
-  const handlePinSuccess = () => {
-    setShowPinModal(false);
 
     if (recipientAcc) {
       saveBeneficiary(recipientAcc.trim(), recipientInfo?.name || `Acct ${recipientAcc}`);
@@ -105,258 +95,242 @@ export default function TransferModal({ isOpen, onClose }) {
       recipientAccountNumber: recipientAcc.trim(),
       amount: Number(amount),
       description: description.trim()
-    })).then((res) => {
-      if (!res.error) {
-        // Success handled by Redux state
-      }
-    });
+    }));
   };
 
   return (
-    <>
-      <div className="modal-overlay" onClick={handleClose}>
-        <div className="modal-container" onClick={(e) => e.stopPropagation()}>
-          {/* Header */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{
-                width: 36,
-                height: 36,
-                borderRadius: 10,
-                background: 'rgba(16, 185, 129, 0.15)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: 'var(--accent-emerald)'
-              }}>
-                <Send size={18} />
-              </div>
-              <div>
-                <h2 style={{ fontSize: '1.15rem', fontWeight: 600 }}>Send Money</h2>
-                <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Direct user-to-user account transfer</p>
-              </div>
+    <div className="modal-overlay" onClick={handleClose}>
+      <div className="modal-container" onClick={(e) => e.stopPropagation()}>
+        {/* Header */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{
+              width: 36,
+              height: 36,
+              borderRadius: 10,
+              background: 'rgba(16, 185, 129, 0.15)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'var(--accent-emerald)'
+            }}>
+              <Send size={18} />
             </div>
-            <button onClick={handleClose} className="btn-outline" style={{ padding: 6, borderRadius: 8 }}>
-              <X size={18} />
+            <div>
+              <h2 style={{ fontSize: '1.15rem', fontWeight: 600 }}>Send Money</h2>
+              <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Direct user-to-user account transfer</p>
+            </div>
+          </div>
+          <button onClick={handleClose} className="btn-outline" style={{ padding: 6, borderRadius: 8, cursor: 'pointer' }}>
+            <X size={18} />
+          </button>
+        </div>
+
+        {error && (
+          <div className="toast-error" style={{ marginBottom: 12 }}>
+            <AlertCircle size={16} />
+            <span>{error}</span>
+          </div>
+        )}
+
+        {actionSuccess ? (
+          <div style={{ textAlign: 'center', padding: '24px 0' }}>
+            <div style={{
+              width: 54,
+              height: 54,
+              borderRadius: '50%',
+              background: 'rgba(16, 185, 129, 0.15)',
+              color: 'var(--accent-emerald)',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginBottom: 16
+            }}>
+              <CheckCircle2 size={32} />
+            </div>
+            <h3 style={{ fontSize: '1.2rem', fontWeight: 600, marginBottom: 8 }}>Transfer Successful!</h3>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginBottom: 24 }}>
+              {actionSuccess}
+            </p>
+            <button onClick={handleClose} className="btn btn-primary" style={{ width: '100%', cursor: 'pointer' }}>
+              Done
             </button>
           </div>
-
-          {error && (
-            <div className="toast-error" style={{ marginBottom: 12 }}>
-              <AlertCircle size={16} />
-              <span>{error}</span>
+        ) : (
+          <form onSubmit={handleSubmit}>
+            {/* Available Balance Box */}
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.03)',
+              border: '1px solid var(--border)',
+              borderRadius: 'var(--radius-md)',
+              padding: '10px 14px',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: 16
+            }}>
+              <span style={{ fontSize: '0.8125rem', color: 'var(--text-muted)' }}>Available Balance</span>
+              <span style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--accent-emerald)', fontFamily: 'var(--font-mono)' }}>
+                ₦{(user?.balance || 0).toLocaleString()}
+              </span>
             </div>
-          )}
 
-          {actionSuccess ? (
-            <div style={{ textAlign: 'center', padding: '24px 0' }}>
-              <div style={{
-                width: 54,
-                height: 54,
-                borderRadius: '50%',
-                background: 'rgba(16, 185, 129, 0.15)',
-                color: 'var(--accent-emerald)',
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginBottom: 16
-              }}>
-                <CheckCircle2 size={32} />
+            {/* Quick Select Beneficiaries Carousel */}
+            {beneficiaries.length > 0 && (
+              <div style={{ marginBottom: 16 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+                  <Star size={13} color="#fbbf24" fill="#fbbf24" />
+                  <span style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-muted)' }}>
+                    Quick Select Beneficiary
+                  </span>
+                </div>
+                <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 4 }}>
+                  {beneficiaries.map((b) => (
+                    <div
+                      key={b.accountNumber}
+                      onClick={() => handleSelectBeneficiary(b)}
+                      style={{
+                        background: recipientAcc === b.accountNumber ? 'rgba(16, 185, 129, 0.2)' : 'rgba(255, 255, 255, 0.04)',
+                        border: `1px solid ${recipientAcc === b.accountNumber ? 'var(--accent-emerald)' : 'var(--border)'}`,
+                        borderRadius: 20,
+                        padding: '6px 12px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 6,
+                        cursor: 'pointer',
+                        whiteSpace: 'nowrap',
+                        fontSize: '0.78rem',
+                        color: '#fff'
+                      }}
+                    >
+                      <User size={13} color="var(--accent-emerald)" />
+                      <span>{b.name}</span>
+                      <Trash2 
+                        size={12} 
+                        color="var(--text-muted)" 
+                        onClick={(e) => removeBeneficiary(b.accountNumber, e)} 
+                        style={{ marginLeft: 2 }} 
+                      />
+                    </div>
+                  ))}
+                </div>
               </div>
-              <h3 style={{ fontSize: '1.2rem', fontWeight: 600, marginBottom: 8 }}>Transfer Successful!</h3>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginBottom: 24 }}>
-                {actionSuccess}
-              </p>
-              <button onClick={handleClose} className="btn btn-primary" style={{ width: '100%' }}>
-                Done
-              </button>
-            </div>
-          ) : (
-            <div>
-              {/* Available Balance Box */}
-              <div style={{
-                background: 'rgba(255, 255, 255, 0.03)',
-                border: '1px solid var(--border)',
-                borderRadius: 'var(--radius-md)',
-                padding: '10px 14px',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                marginBottom: 16
-              }}>
-                <span style={{ fontSize: '0.8125rem', color: 'var(--text-muted)' }}>Available Balance</span>
-                <span style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--accent-emerald)', fontFamily: 'var(--font-mono)' }}>
-                  ₦{(user?.balance || 0).toLocaleString()}
-                </span>
+            )}
+
+            {/* Recipient Account Number */}
+            <div className="form-group">
+              <label className="form-label">Recipient 10-Digit Account Number</label>
+              <div style={{ position: 'relative' }}>
+                <input
+                  type="text"
+                  required
+                  maxLength={10}
+                  placeholder="e.g. 1010001001"
+                  value={recipientAcc}
+                  onChange={(e) => setRecipientAcc(e.target.value)}
+                  className="form-input"
+                  style={{ fontFamily: 'var(--font-mono)', letterSpacing: '0.05em' }}
+                />
+                {lookingUp && (
+                  <div style={{ position: 'absolute', right: 12, top: 12, color: 'var(--text-dim)' }}>
+                    <Loader2 size={16} className="spin-animation" />
+                  </div>
+                )}
               </div>
 
-              {/* Quick Select Beneficiaries Carousel */}
-              {beneficiaries.length > 0 && (
-                <div style={{ marginBottom: 16 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
-                    <Star size={13} color="#fbbf24" fill="#fbbf24" />
-                    <span style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-muted)' }}>
-                      Quick Select Beneficiary
-                    </span>
-                  </div>
-                  <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 4 }}>
-                    {beneficiaries.map((b) => (
-                      <div
-                        key={b.accountNumber}
-                        onClick={() => handleSelectBeneficiary(b)}
-                        style={{
-                          background: recipientAcc === b.accountNumber ? 'rgba(16, 185, 129, 0.2)' : 'rgba(255, 255, 255, 0.04)',
-                          border: `1px solid ${recipientAcc === b.accountNumber ? 'var(--accent-emerald)' : 'var(--border)'}`,
-                          borderRadius: 20,
-                          padding: '6px 12px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 6,
-                          cursor: 'pointer',
-                          whiteSpace: 'nowrap',
-                          fontSize: '0.78rem',
-                          color: '#fff'
-                        }}
-                      >
-                        <User size={13} color="var(--accent-emerald)" />
-                        <span>{b.name}</span>
-                        <Trash2 
-                          size={12} 
-                          color="var(--text-muted)" 
-                          onClick={(e) => removeBeneficiary(b.accountNumber, e)} 
-                          style={{ marginLeft: 2 }} 
-                        />
-                      </div>
-                    ))}
-                  </div>
+              {recipientInfo && (
+                <div style={{
+                  marginTop: 6,
+                  padding: '8px 12px',
+                  borderRadius: 8,
+                  background: 'rgba(16, 185, 129, 0.08)',
+                  border: '1px solid rgba(16, 185, 129, 0.25)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  fontSize: '0.8125rem',
+                  color: '#34d399'
+                }}>
+                  <User size={14} />
+                  <span>Verified: <strong>{recipientInfo.name}</strong> ({recipientInfo.email})</span>
                 </div>
               )}
 
-              {/* Recipient Account Number */}
-              <div className="form-group">
-                <label className="form-label">Recipient 10-Digit Account Number</label>
-                <div style={{ position: 'relative' }}>
-                  <input
-                    type="text"
-                    required
-                    maxLength={10}
-                    placeholder="e.g. 1010001001"
-                    value={recipientAcc}
-                    onChange={(e) => setRecipientAcc(e.target.value)}
-                    className="form-input"
-                    style={{ fontFamily: 'var(--font-mono)', letterSpacing: '0.05em' }}
-                  />
-                  {lookingUp && (
-                    <div style={{ position: 'absolute', right: 12, top: 12, color: 'var(--text-dim)' }}>
-                      <Loader2 size={16} className="spin-animation" />
-                    </div>
-                  )}
+              {lookupError && (
+                <div style={{ fontSize: '0.8rem', color: '#fb7185', marginTop: 4 }}>
+                  {lookupError}
                 </div>
+              )}
+            </div>
 
-                {recipientInfo && (
-                  <div style={{
-                    marginTop: 6,
-                    padding: '8px 12px',
-                    borderRadius: 8,
-                    background: 'rgba(16, 185, 129, 0.08)',
-                    border: '1px solid rgba(16, 185, 129, 0.25)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 8,
-                    fontSize: '0.8125rem',
-                    color: '#34d399'
-                  }}>
-                    <User size={14} />
-                    <span>Verified: <strong>{recipientInfo.name}</strong> ({recipientInfo.email})</span>
-                  </div>
-                )}
+            {/* Amount */}
+            <div className="form-group">
+              <label className="form-label">Transfer Amount (₦)</label>
+              <input
+                type="number"
+                required
+                min="1"
+                max={user?.balance || 0}
+                placeholder="0.00"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                className="form-input"
+                style={{ fontSize: '1.1rem', fontWeight: 600 }}
+              />
 
-                {lookupError && (
-                  <div style={{ fontSize: '0.8rem', color: '#fb7185', marginTop: 4 }}>
-                    {lookupError}
-                  </div>
-                )}
-              </div>
-
-              {/* Amount */}
-              <div className="form-group">
-                <label className="form-label">Transfer Amount (₦)</label>
-                <input
-                  type="number"
-                  required
-                  min="1"
-                  max={user?.balance || 0}
-                  placeholder="0.00"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  className="form-input"
-                  style={{ fontSize: '1.1rem', fontWeight: 600 }}
-                />
-
-                {/* Quick Preset Buttons */}
-                <div style={{ display: 'flex', gap: 6, marginTop: 8 }}>
-                  {[500, 1000, 2000, 5000].map((preset) => (
-                    <button
-                      key={preset}
-                      type="button"
-                      onClick={() => setAmount(preset.toString())}
-                      className="btn btn-secondary"
-                      style={{ padding: '4px 10px', fontSize: '0.75rem', borderRadius: 6, cursor: 'pointer' }}
-                    >
-                      ₦{preset.toLocaleString()}
-                    </button>
-                  ))}
+              {/* Quick Preset Buttons */}
+              <div style={{ display: 'flex', gap: 6, marginTop: 8 }}>
+                {[500, 1000, 2000, 5000].map((preset) => (
                   <button
+                    key={preset}
                     type="button"
-                    onClick={() => setAmount(String(user?.balance || 0))}
+                    onClick={() => setAmount(preset.toString())}
                     className="btn btn-secondary"
-                    style={{ padding: '4px 10px', fontSize: '0.75rem', borderRadius: 6, color: 'var(--accent-emerald)', cursor: 'pointer' }}
+                    style={{ padding: '4px 10px', fontSize: '0.75rem', borderRadius: 6, cursor: 'pointer' }}
                   >
-                    All
+                    ₦{preset.toLocaleString()}
                   </button>
-                </div>
-              </div>
-
-              {/* Reference Note */}
-              <div className="form-group" style={{ marginBottom: 24 }}>
-                <label className="form-label">Reference Note (Optional)</label>
-                <input
-                  type="text"
-                  placeholder="e.g. Dinner split, Freelance pay"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  className="form-input"
-                />
-              </div>
-
-              {/* Action Buttons */}
-              <div style={{ display: 'flex', gap: 10 }}>
-                <button type="button" onClick={handleClose} className="btn btn-secondary" style={{ flex: 1, cursor: 'pointer' }}>
-                  Cancel
-                </button>
+                ))}
                 <button
                   type="button"
-                  onClick={handleOpenPin}
-                  disabled={actionLoading || !amount || Number(amount) <= 0 || Number(amount) > (user?.balance || 0) || !recipientAcc}
-                  className="btn btn-primary"
-                  style={{ flex: 2, cursor: 'pointer' }}
+                  onClick={() => setAmount(String(user?.balance || 0))}
+                  className="btn btn-secondary"
+                  style={{ padding: '4px 10px', fontSize: '0.75rem', borderRadius: 6, color: 'var(--accent-emerald)', cursor: 'pointer' }}
                 >
-                  {actionLoading ? 'Processing...' : `Send ₦${Number(amount || 0).toLocaleString()}`}
+                  All
                 </button>
               </div>
             </div>
-          )}
-        </div>
-      </div>
 
-      {/* Security PIN Modal */}
-      <PinModal
-        isOpen={showPinModal}
-        onClose={() => setShowPinModal(false)}
-        onSuccess={handlePinSuccess}
-        amount={amount}
-        recipientName={recipientInfo?.name || `Account: ${recipientAcc}`}
-      />
-    </>
+            {/* Reference Note */}
+            <div className="form-group" style={{ marginBottom: 24 }}>
+              <label className="form-label">Reference Note (Optional)</label>
+              <input
+                type="text"
+                placeholder="e.g. Dinner split, Freelance pay"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                className="form-input"
+              />
+            </div>
+
+            {/* Action Buttons */}
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button type="button" onClick={handleClose} className="btn btn-secondary" style={{ flex: 1, cursor: 'pointer' }}>
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={actionLoading || !amount || Number(amount) <= 0 || Number(amount) > (user?.balance || 0) || !recipientAcc}
+                className="btn btn-primary"
+                style={{ flex: 2, cursor: 'pointer' }}
+              >
+                {actionLoading ? 'Processing...' : `Send ₦${Number(amount || 0).toLocaleString()}`}
+              </button>
+            </div>
+          </form>
+        )}
+      </div>
+    </div>
   );
 }
