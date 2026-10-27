@@ -31,8 +31,18 @@ export const fetchTransactions = createAsyncThunk(
 
 export const sendTransfer = createAsyncThunk(
   'account/sendTransfer',
-  async ({ recipientAccountNumber, amount, description }, { dispatch, rejectWithValue }) => {
+  async ({ recipientAccountNumber, amount, description }, { dispatch, getState, rejectWithValue }) => {
     try {
+      const { auth } = getState();
+      const userLimit = auth.user?.dailyLimit || 50000;
+      const userTier = auth.user?.kycTier || 1;
+
+      if (Number(amount) > userLimit) {
+        return rejectWithValue(
+          `Amount exceeds your Tier ${userTier} daily limit of ₦${userLimit.toLocaleString()}. Please upgrade your account.`
+        );
+      }
+
       const res = await api.post('/user/transfer', { recipientAccountNumber, amount, description });
       dispatch(updateLocalBalance(res.data.newBalance));
       dispatch(fetchDashboard());
@@ -45,8 +55,18 @@ export const sendTransfer = createAsyncThunk(
 
 export const withdrawFunds = createAsyncThunk(
   'account/withdrawFunds',
-  async ({ amount, bankName, accountNumber, accountName }, { dispatch, rejectWithValue }) => {
+  async ({ amount, bankName, accountNumber, accountName }, { dispatch, getState, rejectWithValue }) => {
     try {
+      const { auth } = getState();
+      const userLimit = auth.user?.dailyLimit || 50000;
+      const userTier = auth.user?.kycTier || 1;
+
+      if (Number(amount) > userLimit) {
+        return rejectWithValue(
+          `Withdrawal exceeds your Tier ${userTier} daily limit of ₦${userLimit.toLocaleString()}. Please upgrade your account.`
+        );
+      }
+
       const res = await api.post('/user/withdraw', { amount, bankName, accountNumber, accountName });
       dispatch(updateLocalBalance(res.data.newBalance));
       dispatch(fetchDashboard());
@@ -73,8 +93,15 @@ export const depositFunds = createAsyncThunk(
 
 export const payAirtime = createAsyncThunk(
   'account/payAirtime',
-  async ({ provider, phone, amount }, { dispatch, rejectWithValue }) => {
+  async ({ provider, phone, amount }, { dispatch, getState, rejectWithValue }) => {
     try {
+      const { auth } = getState();
+      const userLimit = auth.user?.dailyLimit || 50000;
+
+      if (Number(amount) > userLimit) {
+        return rejectWithValue(`Amount exceeds your daily transaction limit of ₦${userLimit.toLocaleString()}.`);
+      }
+
       const res = await api.post('/airtime', { provider, phone, amount });
       dispatch(updateLocalBalance(res.data.newBalance));
       dispatch(fetchDashboard());
@@ -87,8 +114,15 @@ export const payAirtime = createAsyncThunk(
 
 export const payData = createAsyncThunk(
   'account/payData',
-  async ({ provider, phone, planName, amount }, { dispatch, rejectWithValue }) => {
+  async ({ provider, phone, planName, amount }, { dispatch, getState, rejectWithValue }) => {
     try {
+      const { auth } = getState();
+      const userLimit = auth.user?.dailyLimit || 50000;
+
+      if (Number(amount) > userLimit) {
+        return rejectWithValue(`Amount exceeds your daily transaction limit of ₦${userLimit.toLocaleString()}.`);
+      }
+
       const res = await api.post('/data', { provider, phone, planName, amount });
       dispatch(updateLocalBalance(res.data.newBalance));
       dispatch(fetchDashboard());
@@ -101,8 +135,15 @@ export const payData = createAsyncThunk(
 
 export const payElectricity = createAsyncThunk(
   'account/payElectricity',
-  async ({ disco, meterNumber, meterType, amount }, { dispatch, rejectWithValue }) => {
+  async ({ disco, meterNumber, meterType, amount }, { dispatch, getState, rejectWithValue }) => {
     try {
+      const { auth } = getState();
+      const userLimit = auth.user?.dailyLimit || 50000;
+
+      if (Number(amount) > userLimit) {
+        return rejectWithValue(`Amount exceeds your daily transaction limit of ₦${userLimit.toLocaleString()}.`);
+      }
+
       const res = await api.post('/electric', { disco, meterNumber, meterType, amount });
       dispatch(updateLocalBalance(res.data.newBalance));
       dispatch(fetchDashboard());

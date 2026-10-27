@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchDashboard } from "../redux/accountSlice";
+import KycBadge from "./KycBadge"; // ✅ 1. Import KycBadge component
 import {
   Send,
   ArrowDownRight,
@@ -81,7 +82,7 @@ export default function Dashboard() {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-      {/* Top Banner: User Greeting & Quick Refresh */}
+      {/* Top Banner: User Greeting, KYC Badge & Quick Refresh */}
       <div
         style={{
           display: "flex",
@@ -92,16 +93,23 @@ export default function Dashboard() {
         }}
       >
         <div>
-          <h1
-            style={{
-              fontSize: "1.5rem",
-              fontWeight: 700,
-              fontFamily: "var(--font-display)",
-              letterSpacing: "-0.02em",
-            }}
-          >
-            Hello, {user?.name || "Customer"}
-          </h1>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap", marginBottom: 6 }}>
+            <h1
+              style={{
+                fontSize: "1.5rem",
+                fontWeight: 700,
+                fontFamily: "var(--font-display)",
+                letterSpacing: "-0.02em",
+              }}
+            >
+              Hello, {user?.name || "Customer"}
+            </h1>
+            {/* ✅ 2. Render KycBadge next to user's name */}
+            <KycBadge 
+              tier={user?.kycTier || 1} 
+              onUpgrade={() => alert("KYC Upgrade documentation flow is coming soon!")} 
+            />
+          </div>
           <p style={{ fontSize: "0.875rem", color: "var(--text-muted)" }}>
             Welcome to your digital dashboard. Transfer funds, pay bills, and
             manage credit.
@@ -230,7 +238,6 @@ export default function Dashboard() {
             minHeight: 220,
           }}
         >
-          {/* Subtle watermark badge */}
           <div
             style={{
               position: "absolute",
@@ -245,7 +252,6 @@ export default function Dashboard() {
             }}
           />
 
-          {/* Card Top */}
           <div
             style={{
               display: "flex",
@@ -272,7 +278,6 @@ export default function Dashboard() {
                 >
                   Available Balance
                 </span>
-                {/* Balance Visibility Toggle */}
                 <button
                   onClick={() => setShowBalance(!showBalance)}
                   style={{
@@ -303,7 +308,6 @@ export default function Dashboard() {
                   : "••••••••"}
               </div>
             </div>
-            {/* Card Chip / Logo */}
             <div
               style={{
                 width: 44,
@@ -316,7 +320,6 @@ export default function Dashboard() {
             />
           </div>
 
-          {/* Card Bottom */}
           <div
             style={{
               marginTop: 28,
@@ -411,7 +414,6 @@ export default function Dashboard() {
                 gap: 10,
               }}
             >
-              {/* Send Money */}
               <button
                 onClick={() => setModalType("transfer")}
                 className="btn btn-secondary"
@@ -443,7 +445,6 @@ export default function Dashboard() {
                 </span>
               </button>
 
-              {/* Withdraw */}
               <button
                 onClick={() => setModalType("withdraw")}
                 className="btn btn-secondary"
@@ -473,7 +474,6 @@ export default function Dashboard() {
                 </span>
               </button>
 
-              {/* Pay Bills */}
               <button
                 onClick={() => setModalType("bills")}
                 className="btn btn-secondary"
@@ -503,7 +503,6 @@ export default function Dashboard() {
                 </span>
               </button>
 
-              {/* Request Loan */}
               <button
                 onClick={() => setModalType("loan")}
                 className="btn btn-secondary"
@@ -535,7 +534,6 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Top up helper button */}
           <div
             style={{
               marginTop: 14,
@@ -743,7 +741,6 @@ export default function Dashboard() {
             </p>
           </div>
 
-          {/* Filter Pills & Search */}
           <div
             style={{
               display: "flex",
@@ -752,7 +749,6 @@ export default function Dashboard() {
               flexWrap: "wrap",
             }}
           >
-            {/* Filter buttons */}
             <div
               style={{
                 display: "flex",
@@ -781,7 +777,6 @@ export default function Dashboard() {
               ))}
             </div>
 
-            {/* Search Input */}
             <div style={{ position: "relative" }}>
               <Search
                 size={14}
@@ -811,7 +806,6 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Transaction Table / List */}
         {filteredTransactions.length === 0 ? (
           <div
             style={{
@@ -856,7 +850,6 @@ export default function Dashboard() {
                       "rgba(255, 255, 255, 0.02)")
                   }
                 >
-                  {/* Left: Icon & Description */}
                   <div
                     style={{ display: "flex", alignItems: "center", gap: 12 }}
                   >
@@ -909,7 +902,6 @@ export default function Dashboard() {
                     </div>
                   </div>
 
-                  {/* Right: Amount & Receipt prompt */}
                   <div style={{ textAlign: "right" }}>
                     <div
                       style={{
