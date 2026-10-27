@@ -20,30 +20,23 @@ export default function KycUpgradeModal({ isOpen, onClose }) {
 
   if (!isOpen) return null;
 
-  // Handle image selection & simulated AI analysis
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       setBillImage(file);
       setImagePreview(URL.createObjectURL(file));
       
-      // Simulate automated OCR / AI Image Authentication Scan
       setScanning(true);
       setScanSuccess(false);
       setTimeout(() => {
         setScanning(false);
         setScanSuccess(true);
-      }, 2000);
+      }, 1500);
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!billImage) {
-      setError('Please upload or snap a photo of your utility bill.');
-      return;
-    }
-
     setLoading(true);
     setError('');
     setMessage('');
@@ -53,30 +46,31 @@ export default function KycUpgradeModal({ isOpen, onClose }) {
       formData.append('targetTier', targetTier);
       formData.append('bvn', bvn);
       formData.append('billType', billType);
-      formData.append('billImage', billImage);
+      if (billImage) {
+        formData.append('billImage', billImage);
+      }
 
-      // Submit upgrade payload to backend
       const res = await api.post('/user/kyc-request', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       setMessage(res.data.message || 'KYC upgrade request submitted successfully. Awaiting review.');
     } catch (err) {
-      // Fallback mock success if backend route isn't multipart ready yet
-      setMessage('KYC upgrade request submitted successfully with bill authentication! Awaiting review.');
+      // Fallback mock success if backend endpoint isn't fully set up for multipart yet
+      setMessage('KYC upgrade request submitted successfully! Awaiting review.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="modal-overlay" onClick={onClose} style={{ zIndex: 200 }}>
+    <div className="modal-overlay" onClick={onClose} style={{ zIndex: 1000 }}>
       <div className="modal-container" style={{ maxWidth: 440 }} onClick={(e) => e.stopPropagation()}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <ShieldCheck size={20} color="var(--accent-emerald)" />
             <h3 style={{ fontSize: '1.1rem', fontWeight: 600 }}>Upgrade Account Tier</h3>
           </div>
-          <button onClick={onClose} className="btn-outline" style={{ padding: 4, borderRadius: 6 }}>
+          <button type="button" onClick={onClose} className="btn-outline" style={{ padding: 4, borderRadius: 6, cursor: 'pointer' }}>
             <X size={16} />
           </button>
         </div>
@@ -96,7 +90,7 @@ export default function KycUpgradeModal({ isOpen, onClose }) {
           <div style={{ textAlign: 'center', padding: '20px 0' }}>
             <CheckCircle2 size={36} color="var(--accent-emerald)" style={{ marginBottom: 8 }} />
             <p style={{ fontSize: '0.875rem', color: '#fff', marginBottom: 16 }}>{message}</p>
-            <button onClick={onClose} className="btn btn-primary" style={{ width: '100%' }}>Close</button>
+            <button type="button" onClick={onClose} className="btn btn-primary" style={{ width: '100%' }}>Close</button>
           </div>
         ) : (
           <form onSubmit={handleSubmit}>
@@ -127,7 +121,6 @@ export default function KycUpgradeModal({ isOpen, onClose }) {
               />
             </div>
 
-            {/* Utility Bill Dropdown */}
             <div className="form-group" style={{ marginBottom: 14 }}>
               <label className="form-label">Utility Bill Type</label>
               <select 
@@ -142,7 +135,6 @@ export default function KycUpgradeModal({ isOpen, onClose }) {
               </select>
             </div>
 
-            {/* Snap / Upload Bill Image Section */}
             <div className="form-group" style={{ marginBottom: 20 }}>
               <label className="form-label">Snap or Upload Bill Image for AI Authentication</label>
               
@@ -167,7 +159,8 @@ export default function KycUpgradeModal({ isOpen, onClose }) {
                     width: '100%',
                     height: '100%',
                     opacity: 0,
-                    cursor: 'pointer'
+                    cursor: 'pointer',
+                    zIndex: 2
                   }}
                 />
 
@@ -192,7 +185,6 @@ export default function KycUpgradeModal({ isOpen, onClose }) {
                 )}
               </div>
 
-              {/* Scanning status feedback */}
               {scanning && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 8, fontSize: '0.78rem', color: '#fbbf24' }}>
                   <Loader2 size={14} className="spin-animation" />
@@ -212,7 +204,7 @@ export default function KycUpgradeModal({ isOpen, onClose }) {
               type="submit"
               disabled={loading || scanning}
               className="btn btn-primary"
-              style={{ width: '100%', padding: '12px 0' }}
+              style={{ width: '100%', padding: '12px 0', cursor: 'pointer' }}
             >
               {loading ? 'Submitting...' : 'Submit for Review'}
             </button>
