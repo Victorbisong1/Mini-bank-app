@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { sendTransfer, clearAccountStatus } from '../redux/accountSlice';
 import api from '../services/api';
-import PinModal from './PinModal'; // ✅ Import PinModal
-import { X, Send, User, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
+import PinModal from './PinModal';
+import { X, Send, User, CheckCircle2, AlertCircle, Loader2, Star, Trash2 } from 'lucide-react';
 
 export default function TransferModal({ isOpen, onClose }) {
   const dispatch = useDispatch();
@@ -16,6 +16,12 @@ export default function TransferModal({ isOpen, onClose }) {
   const [lookupError, setLookupError] = useState('');
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
+
+  // Beneficiaries State loaded from localStorage
+  const [beneficiaries, setBeneficiaries] = useState(() => {
+    const saved = localStorage.getItem('cashversal_beneficiaries');
+    return saved ? JSON.parse(saved) : [];
+  });
 
   // State to control PIN modal visibility
   const [showPinModal, setShowPinModal] = useState(false);
@@ -49,6 +55,28 @@ export default function TransferModal({ isOpen, onClose }) {
 
   if (!isOpen) return null;
 
+  // Save beneficiary to localStorage helper
+  const saveBeneficiary = (accountNumber, name) => {
+    const existing = beneficiaries.find(b => b.accountNumber === accountNumber);
+    if (!existing) {
+      const updated = [{ accountNumber, name }, ...beneficiaries].slice(0, 5); // Keep top 5
+      setBeneficiaries(updated);
+      localStorage.setItem('cashversal_beneficiaries', JSON.stringify(updated));
+    }
+  };
+
+  // Remove beneficiary from localStorage helper
+  const removeBeneficiary = (accountNumber, e) => {
+    e.stopPropagation();
+    const updated = beneficiaries.filter(b => b.accountNumber !== accountNumber);
+    setBeneficiaries(updated);
+    localStorage.setItem('cashversal_beneficiaries', JSON.stringify(updated));
+  };
+
+  const handleSelectBeneficiary = (b) => {
+    setRecipientAcc(b.accountNumber);
+  };
+
   const handleClose = () => {
     dispatch(clearAccountStatus());
     setRecipientAcc('');
@@ -70,6 +98,12 @@ export default function TransferModal({ isOpen, onClose }) {
   // 2. Triggered when 4-digit PIN (1234) is successfully verified
   const handlePinSuccess = () => {
     setShowPinModal(false);
+
+    // Automatically save beneficiary to localStorage on successful initiation
+    if (recipientAcc) {
+      saveBeneficiary(recipientAcc.trim(), recipientInfo?.name || `Acct ${recipientAcc}`);
+    }
+
     dispatch(sendTransfer({
       recipientAccountNumber: recipientAcc.trim(),
       amount: Number(amount),
@@ -155,6 +189,48 @@ export default function TransferModal({ isOpen, onClose }) {
                   ₦{(user?.balance || 0).toLocaleString()}
                 </span>
               </div>
+
+              {/* Quick Select Beneficiaries Carousel */}
+              {beneficiaries.length > 0 && (
+                <div style={{ marginBottom: 16 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+                    <Star size={13} color="#fbbf24" fill="#fbbf24" />
+                    <span style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-muted)' }}>
+                      Quick Select Beneficiary
+                    </span>
+                  </div>
+                  <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 4 }}>
+                    {beneficiaries.map((b) => (
+                      <div
+                        key={b.accountNumber}
+                        onClick={() => handleSelectBeneficiary(b)}
+                        style={{
+                          background: recipientAcc === b.accountNumber ? 'rgba(16, 185, 129, 0.2)' : 'rgba(255, 255, 255, 0.04)',
+                          border: `1px solid ${recipientAcc === b.accountNumber ? 'var(--accent-emerald)' : 'var(--border)'}`,
+                          borderRadius: 20,
+                          padding: '6px 12px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 6,
+                          cursor: 'pointer',
+                          whiteSpace: 'nowrap',
+                          fontSize: '0.78rem',
+                          color: '#fff'
+                        }}
+                      >
+                        <User size={13} color="var(--accent-emerald)" />
+                        <span>{b.name}</span>
+                        <Trash2 
+                          size={12} 
+                          color="var(--text-muted)" 
+                          onClick={(e) => removeBeneficiary(b.accountNumber, e)} 
+                          style={{ marginLeft: 2 }} 
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Recipient Account Number */}
               <div className="form-group">

@@ -59,10 +59,10 @@ export default function KycUpgradeModal({ isOpen, onClose }) {
       const res = await api.post('/user/kyc-request', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
-      setMessage(res.data.message || 'KYC upgrade request submitted successfully. Awaiting admin review.');
+      setMessage(res.data.message || 'KYC upgrade request submitted successfully. Awaiting review.');
     } catch (err) {
       // Fallback mock success if backend route isn't multipart ready yet
-      setMessage('KYC upgrade request submitted successfully with bill authentication! Awaiting admin review.');
+      setMessage('KYC upgrade request submitted successfully with bill authentication! Awaiting review.');
     } finally {
       setLoading(false);
     }
@@ -214,7 +214,7 @@ export default function KycUpgradeModal({ isOpen, onClose }) {
               className="btn btn-primary"
               style={{ width: '100%', padding: '12px 0' }}
             >
-              {loading ? 'Submitting...' : 'Submit for Admin Review'}
+              {loading ? 'Submitting...' : 'Submit for Review'}
             </button>
           </form>
         )}
