@@ -233,11 +233,14 @@ const admintrans = async(req, res) => {
   }
 }
 
-// Get all pending tier upgrade requests
+// Get all pending tier upgrade requests (Updated to return both keys for compatibility)
 const getTierRequests = async (req, res) => {
     try {
         const users = await User.find({ 'tierRequest.status': 'pending' }).select('-password');
-        res.json({ requests: users });
+        res.json({ 
+            requests: users, 
+            tierRequests: users 
+        });
     } catch (err) {
         console.error('Error fetching tier requests:', err);
         res.status(500).json({ message: 'Error fetching tier upgrade requests.' });
