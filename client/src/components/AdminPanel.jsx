@@ -67,7 +67,7 @@ export default function AdminPanel() {
       const res = await axios.get('/api/admin/tier-requests', {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setTierRequests(res.data.requests);
+      setTierRequests(res.data.tierRequests || res.data.requests || []);
     } catch (err) {
       console.error('Error fetching tier requests:', err);
     }
