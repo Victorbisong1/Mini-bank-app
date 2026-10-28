@@ -1,10 +1,24 @@
-import React from 'react';
-import { X, CheckCircle, Receipt, ArrowUpRight, ArrowDownLeft, ShieldCheck } from 'lucide-react';
+import React, { useRef } from 'react';
+import html2canvas from 'html2canvas';
+import { X, CheckCircle, Receipt, Download } from 'lucide-react';
 
 export default function ReceiptModal({ transaction, onClose }) {
+  const receiptRef = useRef(null);
+
   if (!transaction) return null;
 
   const isCredit = ['TRANSFER_IN', 'DEPOSIT', 'BONUS', 'LOAN_DISBURSEMENT'].includes(transaction.type);
+
+  const handleDownload = async () => {
+    if (receiptRef.current) {
+      const canvas = await html2canvas(receiptRef.current, { scale: 2, backgroundColor: '#121824' });
+      const image = canvas.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.href = image;
+      link.download = `CashVersal_Receipt_${transaction.reference || 'Tx'}.png`;
+      link.click();
+    }
+  };
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -28,86 +42,95 @@ export default function ReceiptModal({ transaction, onClose }) {
               <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Official platform transfer record</p>
             </div>
           </div>
-          <button onClick={onClose} className="btn-outline" style={{ padding: 6, borderRadius: 8 }}>
+          <button onClick={onClose} className="btn-outline" style={{ padding: 6, borderRadius: 8, cursor: 'pointer' }}>
             <X size={18} />
           </button>
         </div>
 
-        {/* Amount Hero */}
-        <div style={{
-          textAlign: 'center',
-          padding: '20px 0',
-          borderBottom: '1px dashed var(--border)',
-          marginBottom: 20
-        }}>
+        {/* Printable/Downloadable Capture Wrapper */}
+        <div ref={receiptRef} style={{ padding: '4px', background: 'transparent' }}>
+          {/* Amount Hero */}
           <div style={{
-            fontSize: '1.9rem',
-            fontWeight: 700,
-            color: isCredit ? 'var(--accent-emerald)' : 'var(--text-main)',
-            fontFamily: 'var(--font-mono)',
-            marginBottom: 4
+            textAlign: 'center',
+            padding: '20px 0',
+            borderBottom: '1px dashed var(--border)',
+            marginBottom: 20
           }}>
-            {isCredit ? '+' : '-'}₦{Number(transaction.amount || 0).toLocaleString()}
-          </div>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: '#34d399', fontSize: '0.8125rem' }}>
-            <CheckCircle size={14} />
-            <span>Completed Successfully</span>
-          </div>
-        </div>
-
-        {/* Breakdown details */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 24, fontSize: '0.85rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span style={{ color: 'var(--text-muted)' }}>Transaction Type</span>
-            <span style={{ fontWeight: 600 }}>{transaction.type}</span>
-          </div>
-
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span style={{ color: 'var(--text-muted)' }}>Description</span>
-            <span style={{ fontWeight: 500, textAlign: 'right', maxWidth: '60%' }}>{transaction.description}</span>
-          </div>
-
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span style={{ color: 'var(--text-muted)' }}>Counterparty</span>
-            <span style={{ fontWeight: 500 }}>
-              {transaction.counterparty?.name || 'CashVersal Apex'}
-            </span>
-          </div>
-
-          {transaction.counterparty?.accountNumber && (
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--text-muted)' }}>Account / Dest</span>
-              <span style={{ fontFamily: 'var(--font-mono)' }}>{transaction.counterparty.accountNumber}</span>
+            <div style={{
+              fontSize: '1.9rem',
+              fontWeight: 700,
+              color: isCredit ? 'var(--accent-emerald)' : 'var(--text-main)',
+              fontFamily: 'var(--font-mono)',
+              marginBottom: 4
+            }}>
+              {isCredit ? '+' : '-'}₦{Number(transaction.amount || 0).toLocaleString()}
             </div>
-          )}
-
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span style={{ color: 'var(--text-muted)' }}>Reference ID</span>
-            <span style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-dim)', fontSize: '0.8rem' }}>
-              {transaction.reference}
-            </span>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: '#34d399', fontSize: '0.8125rem' }}>
+              <CheckCircle size={14} />
+              <span>Completed Successfully</span>
+            </div>
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span style={{ color: 'var(--text-muted)' }}>Timestamp</span>
-            <span style={{ color: 'var(--text-dim)' }}>
-              {new Date(transaction.createdAt).toLocaleString()}
-            </span>
-          </div>
+          {/* Breakdown details */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 24, fontSize: '0.85rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{ color: 'var(--text-muted)' }}>Transaction Type</span>
+              <span style={{ fontWeight: 600 }}>{transaction.type}</span>
+            </div>
 
-          {transaction.balanceAfter !== undefined && (
-            <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid var(--border)', paddingTop: 10 }}>
-              <span style={{ color: 'var(--text-muted)' }}>Balance After</span>
-              <span style={{ fontWeight: 600, fontFamily: 'var(--font-mono)' }}>
-                ₦{Number(transaction.balanceAfter).toLocaleString()}
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{ color: 'var(--text-muted)' }}>Description</span>
+              <span style={{ fontWeight: 500, textAlign: 'right', maxWidth: '60%' }}>{transaction.description}</span>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{ color: 'var(--text-muted)' }}>Counterparty</span>
+              <span style={{ fontWeight: 500 }}>
+                {transaction.counterparty?.name || 'CashVersal Apex'}
               </span>
             </div>
-          )}
+
+            {transaction.counterparty?.accountNumber && (
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Account / Dest</span>
+                <span style={{ fontFamily: 'var(--font-mono)' }}>{transaction.counterparty.accountNumber}</span>
+              </div>
+            )}
+
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{ color: 'var(--text-muted)' }}>Reference ID</span>
+              <span style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-dim)', fontSize: '0.8rem' }}>
+                {transaction.reference}
+              </span>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{ color: 'var(--text-muted)' }}>Timestamp</span>
+              <span style={{ color: 'var(--text-dim)' }}>
+                {new Date(transaction.createdAt).toLocaleString()}
+              </span>
+            </div>
+
+            {transaction.balanceAfter !== undefined && (
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid var(--border)', paddingTop: 10 }}>
+                <span style={{ color: 'var(--text-muted)' }}>Balance After</span>
+                <span style={{ fontWeight: 600, fontFamily: 'var(--font-mono)' }}>
+                  ₦{Number(transaction.balanceAfter).toLocaleString()}
+                </span>
+              </div>
+            )}
+          </div>
         </div>
 
-        <button onClick={onClose} className="btn btn-secondary" style={{ width: '100%' }}>
-          Dismiss
-        </button>
+        {/* Action Buttons */}
+        <div style={{ display: 'flex', gap: 10 }}>
+          <button onClick={handleDownload} className="btn btn-primary" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, cursor: 'pointer' }}>
+            <Download size={16} /> Download
+          </button>
+          <button onClick={onClose} className="btn btn-secondary" style={{ flex: 1, cursor: 'pointer' }}>
+            Dismiss
+          </button>
+        </div>
       </div>
     </div>
   );
