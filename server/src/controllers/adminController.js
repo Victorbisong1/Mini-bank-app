@@ -14,6 +14,7 @@ const getstats = async(req, res) => {
         const pendingLoans = loans.filter(l => l.status === 'pending');
         const approvedLoans = loans.filter(l => l.status === 'approved');
         const bannedUsers = users.filter(u => u.status === 'banned');
+        const pendingTiers = users.filter(u => u.tierRequest && u.tierRequest.status === 'pending');
 
         res.json({
            stats:{
@@ -23,7 +24,8 @@ const getstats = async(req, res) => {
             totalPlatformBalances: totalBalances,
             totalTransactionsCount: transactions.length,
             pendingLoansCount: pendingLoans.length,
-            approvedLoansCount: approvedLoans.length
+            approvedLoansCount: approvedLoans.length,
+            pendingTierRequestsCount: pendingTiers.length
            } 
         });
     } catch (error) {
@@ -231,6 +233,54 @@ const admintrans = async(req, res) => {
   }
 }
 
+// Get all pending tier upgrade requests
+const getTierRequests = async (req, res) => {
+    try {
+        const users = await User.find({ 'tierRequest.status': 'pending' }).select('-password');
+        res.json({ requests: users });
+    } catch (err) {
+        console.error('Error fetching tier requests:', err);
+        res.status(500).json({ message: 'Error fetching tier upgrade requests.' });
+    }
+};
+
+// Approve or reject a tier upgrade request
+const updateTierRequest = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { status } = req.body; // 'approved' or 'rejected'
+
+        if (!['approved', 'rejected'].includes(status)) {
+            return res.status(400).json({ message: 'Status must be approved or rejected.' });
+        }
+
+        const user = await User.findById(userId);
+        if (!user) return res.status(404).json({ message: 'User not found.' });
+
+        if (status === 'approved') {
+            user.tier = user.tierRequest.targetTier || 2;
+            user.tierRequest.status = 'approved';
+        } else {
+            user.tierRequest.status = 'rejected';
+        }
+
+        await user.save();
+        res.json({ message: `Tier upgrade request ${status} successfully!`, user });
+    } catch (err) {
+        console.error('Error updating tier request:', err);
+        res.status(500).json({ message: 'Error processing tier upgrade review.' });
+    }
+};
+
 module.exports = {
-    getstats, getusers, createuser, updateusers, banuser, getAllLoans, updateloans, admintrans
+    getstats, 
+    getusers, 
+    createuser, 
+    updateusers, 
+    banuser, 
+    getAllLoans, 
+    updateloans, 
+    admintrans,
+    getTierRequests,
+    updateTierRequest
 };

@@ -1,7 +1,18 @@
 const express = require('express')
 const router = express.Router()
 const {protect, adminOnly} = require('../middlewares/auth')
-const {getstats, getusers, createuser, updateusers, banuser, getAllLoans, updateloans, admintrans} = require('../controllers/adminController')
+const {
+    getstats, 
+    getusers, 
+    createuser, 
+    updateusers, 
+    banuser, 
+    getAllLoans, 
+    updateloans, 
+    admintrans,
+    getTierRequests,
+    updateTierRequest
+} = require('../controllers/adminController')
 const { registeruser, login, getme, lookup, getdashboard, transfer, transactions, withdraw, deposit} = require('../controllers/authController')
 const {airtime, getdata, electricity, getloan, myloans} = require('../controllers/billController')
 
@@ -36,5 +47,9 @@ router.put('/admin/users/:id/ban', protect, adminOnly, banuser)
 router.get('/admin/loans', protect, adminOnly, getAllLoans)
 router.put('/admin/loans/:id/status', protect, adminOnly, updateloans)
 router.get('/admin/transactions', protect, adminOnly, admintrans)
+
+//admin tier upgrade review routes
+router.get('/admin/tier-requests', protect, adminOnly, getTierRequests)
+router.put('/admin/tier-requests/:userId', protect, adminOnly, updateTierRequest)
 
 module.exports = router
