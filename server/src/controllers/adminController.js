@@ -233,10 +233,11 @@ const admintrans = async(req, res) => {
   }
 }
 
-// Get all pending tier upgrade requests (Updated to return both keys for compatibility)
+// Get all pending tier upgrade requests
 const getTierRequests = async (req, res) => {
     try {
         const users = await User.find({ 'tierRequest.status': 'pending' }).select('-password');
+        console.log('🔍 DEBUG - Pending tier requests found in DB:', users.length);
         res.json({ 
             requests: users, 
             tierRequests: users 
