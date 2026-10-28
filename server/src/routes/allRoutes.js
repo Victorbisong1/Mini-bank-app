@@ -13,7 +13,7 @@ const {
     getTierRequests,
     updateTierRequest
 } = require('../controllers/adminController')
-const { registeruser, login, getme, lookup, getdashboard, transfer, transactions, withdraw, deposit} = require('../controllers/authController')
+const { registeruser, login, getme, lookup, getdashboard, transfer, transactions, withdraw, deposit, submitKycRequest } = require('../controllers/authController')
 const {airtime, getdata, electricity, getloan, myloans} = require('../controllers/billController')
 
 // auth routes
