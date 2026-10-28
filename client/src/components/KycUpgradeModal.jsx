@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { X, ShieldCheck, AlertCircle, CheckCircle2, Upload, Camera, Loader2 } from 'lucide-react';
+import { X, ShieldCheck, AlertCircle, CheckCircle2, Upload, Camera } from 'lucide-react';
 import api from '../services/api';
 
 export default function KycUpgradeModal({ isOpen, onClose }) {
@@ -12,8 +12,6 @@ export default function KycUpgradeModal({ isOpen, onClose }) {
   const [billImage, setBillImage] = useState(null);
   const [imagePreview, setImagePreview] = useState('');
   
-  const [scanning, setScanning] = useState(false);
-  const [scanSuccess, setScanSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
@@ -25,13 +23,7 @@ export default function KycUpgradeModal({ isOpen, onClose }) {
     if (file) {
       setBillImage(file);
       setImagePreview(URL.createObjectURL(file));
-      
-      setScanning(true);
-      setScanSuccess(false);
-      setTimeout(() => {
-        setScanning(false);
-        setScanSuccess(true);
-      }, 1500);
+      // Auto-verification simulation removed here so it waits for formal review submission
     }
   };
 
@@ -136,7 +128,7 @@ export default function KycUpgradeModal({ isOpen, onClose }) {
             </div>
 
             <div className="form-group" style={{ marginBottom: 20 }}>
-              <label className="form-label">Snap or Upload Bill Image for AI Authentication</label>
+              <label className="form-label">Snap or Upload Bill Image for Review</label>
               
               <div style={{
                 border: '2px dashed var(--border)',
@@ -184,25 +176,11 @@ export default function KycUpgradeModal({ isOpen, onClose }) {
                   </div>
                 )}
               </div>
-
-              {scanning && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 8, fontSize: '0.78rem', color: '#fbbf24' }}>
-                  <Loader2 size={14} className="spin-animation" />
-                  <span>AI Scanner analyzing bill address & clarity...</span>
-                </div>
-              )}
-
-              {scanSuccess && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 8, fontSize: '0.78rem', color: '#34d399' }}>
-                  <CheckCircle2 size={14} />
-                  <span>Bill successfully authenticated & verified!</span>
-                </div>
-              )}
             </div>
 
             <button
               type="submit"
-              disabled={loading || scanning}
+              disabled={loading}
               className="btn btn-primary"
               style={{ width: '100%', padding: '12px 0', cursor: 'pointer' }}
             >
