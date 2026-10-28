@@ -209,7 +209,7 @@ const transfer = async (req, res) => {
 
     if (sender.balance < numAmount) {
       return res.status(400).json({
-        message: `Insufficient funds. Your current balance is $${sender.balance.toLocaleString()}.`
+        message: `Insufficient funds. Your current balance is ₦${sender.balance.toLocaleString()}.`
       });
     }
 
@@ -270,7 +270,7 @@ const transfer = async (req, res) => {
     });
 
     res.json({
-      message: `Successfully transferred $${numAmount.toLocaleString()} to ${recipient.name}!`,
+      message: `Successfully transferred ₦${numAmount.toLocaleString()} to ${recipient.name}!`,
       newBalance: newSenderBalance,
       transaction: senderTx
     });
@@ -299,7 +299,7 @@ const withdraw = async (req, res) => {
 
     if (user.balance < numAmount) {
       return res.status(400).json({
-        message: `Insufficient funds. Your available balance is $${user.balance.toLocaleString()}.`
+        message: `Insufficient funds. Your available balance is ₦${user.balance.toLocaleString()}.`
       });
     }
 
@@ -327,7 +327,7 @@ const withdraw = async (req, res) => {
     });
 
     res.json({
-      message: `Withdrawal of $${numAmount.toLocaleString()} processed successfully to ${bankName}.`,
+      message: `Withdrawal of ₦${numAmount.toLocaleString()} processed successfully to ${bankName}.`,
       newBalance,
       transaction: tx
     });
@@ -371,7 +371,7 @@ const deposit = async (req, res) => {
     });
 
     res.json({
-      message: `Account topped up by $${numAmount.toLocaleString()} successfully!`,
+      message: `Account topped up by ₦${numAmount.toLocaleString()} successfully!`,
       newBalance,
       transaction: tx
     });

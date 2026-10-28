@@ -1,19 +1,19 @@
-const User = require('../models/Users')
-const Transaction = require('../models/Transaction')
-const Loan = require('../models/Loan')
-const bcrypt = require('bcryptjs')
-const {generateUniqueAccountNumber} = helpers = require('../utils/helpers');
+const User = require('../models/Users');
+const Transaction = require('../models/Transaction');
+const Loan = require('../models/Loan');
+const bcrypt = require('bcryptjs');
+const { generateUniqueAccountNumber } = helpers = require('../utils/helpers');
 
 const getstats = async(req, res) => {
     try {
-        const users = await User.find({}).select('-password')
-        const transactions = await Transaction.find({})
-        const loans = await Loan.find({})
+        const users = await User.find({}).select('-password');
+        const transactions = await Transaction.find({});
+        const loans = await Loan.find({});
 
-        const totalBalances = users.reduce((acc, u) => acc + (Number(u.balance) || 0), 0)
-        const pendingLoans = loans.filter(l => l.status === 'pending')
-        const approvedLoans = loans.filter(l => l.status === 'approved')
-        const bannedUsers = users.filter(u => u.status === 'banned')
+        const totalBalances = users.reduce((acc, u) => acc + (Number(u.balance) || 0), 0);
+        const pendingLoans = loans.filter(l => l.status === 'pending');
+        const approvedLoans = loans.filter(l => l.status === 'approved');
+        const bannedUsers = users.filter(u => u.status === 'banned');
 
         res.json({
            stats:{
@@ -25,10 +25,10 @@ const getstats = async(req, res) => {
             pendingLoansCount: pendingLoans.length,
             approvedLoansCount: approvedLoans.length
            } 
-        })
+        });
     } catch (error) {
-        console.log('Admin stats error', error)
-        res.status(500).json({message: 'Error loading admin stats'})
+        console.log('Admin stats error', error);
+        res.status(500).json({ message: 'Error loading admin stats' });
     }
 }
 
@@ -44,20 +44,20 @@ const getusers = async (req, res) => {
 
 const createuser = async(req, res) => {
     try {
-        const {name, email, password, role = 'user', balance = 0} = req.body
-        if(!name || !email || !password){
-            return res.status(400).json({message: 'Name, email and password are required'})
+        const { name, email, password, role = 'user', balance = 0 } = req.body;
+        if (!name || !email || !password) {
+            return res.status(400).json({ message: 'Name, email and password are required' });
         }
 
-        const cleanEmail = email.trim().toLowerCase() 
-        const existing = await User.findOne({email: cleanEmail})
-        if(existing){
-            return res.status(400).json({message: 'A user with this email already exists'})
+        const cleanEmail = email.trim().toLowerCase();
+        const existing = await User.findOne({ email: cleanEmail });
+        if (existing) {
+            return res.status(400).json({ message: 'A user with this email already exists' });
         }
 
-        const accountNumber = await generateUniqueAccountNumber()
-        const hashedPassword = await bcrypt.hash(password, 10)
-        const numBalance = Number(balance) 
+        const accountNumber = await generateUniqueAccountNumber();
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const numBalance = Number(balance);
 
         const newUser = await User.create({
             name: name.trim(),
@@ -66,12 +66,13 @@ const createuser = async(req, res) => {
             accountNumber,
             balance: numBalance,
             role: role === 'admin' ? 'admin' : 'user'
-        })
+        });
 
         await Transaction.create({
             userId: newUser._id,
             type: 'BONUS',
             amount: numBalance,
+            balanceAfter: numBalance,
             description: 'Account created by Admin',
             reference: 'Admin_init_' + Date.now(),
             counterparty: {
@@ -79,85 +80,84 @@ const createuser = async(req, res) => {
                 accountNumber: 'Admin',
                 bank: 'MiniBank Apex'
             }
-        })
+        });
 
-        const safeUser = newUser.toObject()
-        delete safeUser.password
+        const safeUser = newUser.toObject();
+        delete safeUser.password;
 
         res.status(201).json({
             message: 'User created successfully',
             user: safeUser
-        })
+        });
     } catch (error) {
-        console.log('Admin create user error', error)
-        res.status(500).json({message: 'Error creating user.'})
+        console.log('Admin create user error', error);
+        res.status(500).json({ message: 'Error creating user.' });
     }
 }
 
-
 const updateusers = async(req, res) => {
     try {
-        const {id} = req.params
-        const {name, email, role, balance, status} = req.body
-        const user = await User.findById(id)
-        if(!user) return res.status(404).json({message: 'User not found.'})
-        if(String(user._id) === String(req.user._id) && status === 'banned'){
-            return res.status(400).json({message: 'You cannot ban your active admin account'})
+        const { id } = req.params;
+        const { name, email, role, balance, status } = req.body;
+        const user = await User.findById(id);
+        if (!user) return res.status(404).json({ message: 'User not found.' });
+        if (String(user._id) === String(req.user._id) && status === 'banned') {
+            return res.status(400).json({ message: 'You cannot ban your active admin account' });
         }
 
-        if(name) user.name = name.trim()
-        if(email) user.email = email.trim().toLowerCase()
-        if(role && ['user', 'admin'].includes(role)) user.role = role;
-        if(status && ['active', 'banned'].includes(status)) user.status = status;
-        if(balance !== undefined && !isNaN(balance)) user.balance = Number(balance)
+        if (name) user.name = name.trim();
+        if (email) user.email = email.trim().toLowerCase();
+        if (role && ['user', 'admin'].includes(role)) user.role = role;
+        if (status && ['active', 'banned'].includes(status)) user.status = status;
+        if (balance !== undefined && !isNaN(balance)) user.balance = Number(balance);
 
-        await user.save()
-        const safeUser = user.toObject()
-        delete safeUser.password
+        await user.save();
+        const safeUser = user.toObject();
+        delete safeUser.password;
 
         res.json({
             message: 'User account updated successfully!',
             user: safeUser
-        })
+        });
     } catch (error) {
-        console.log('user update error', error)
-        res.status(500).json({message: 'error updating user'})
+        console.log('user update error', error);
+        res.status(500).json({ message: 'error updating user' });
     }
 }
 
 const banuser = async(req, res) => {
     try {
-        const {id} = req.params
-        const {banned} = req.body
+        const { id } = req.params;
+        const { banned } = req.body;
 
-        const user = await User.findById(id) 
-        if(!user) return res.status(404).json({message: 'User not found'})
+        const user = await User.findById(id);
+        if (!user) return res.status(404).json({ message: 'User not found' });
 
-        if (String(user._id) === String(req.user._id)){
-            return res.status(400).json({message: 'You cannot ban yourself'})
+        if (String(user._id) === String(req.user._id)) {
+            return res.status(400).json({ message: 'You cannot ban yourself' });
         }
 
-        user.status = banned ? 'banned' : 'active'
-        await user.save()
+        user.status = banned ? 'banned' : 'active';
+        await user.save();
 
-        const safeUser = user.toObject()
-        delete safeUser.password
+        const safeUser = user.toObject();
+        delete safeUser.password;
 
         res.json({
             message: `User ${safeUser.name} has been ${user.status === 'banned' ? 'banned' : 'unbanned'}`,
             user: safeUser
-        })
+        });
     } catch (error) {
-        res.status(500).json({message: 'Error toggling user ban status'})
+        res.status(500).json({ message: 'Error toggling user ban status' });
     }
 }
 
 const getAllLoans = async(req, res) => {
     try {
-        const loans = await Loan.find({}).sort({createdAt: -1})
-        res.json({loans})
+        const loans = await Loan.find({}).sort({ createdAt: -1 });
+        res.json({ loans });
     } catch (error) {
-        res.status(500).json({message: 'Error fetching loans'})
+        res.status(500).json({ message: 'Error fetching loans' });
     }
 }
 
@@ -233,4 +233,4 @@ const admintrans = async(req, res) => {
 
 module.exports = {
     getstats, getusers, createuser, updateusers, banuser, getAllLoans, updateloans, admintrans
-}
+};
