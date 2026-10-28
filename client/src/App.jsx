@@ -51,16 +51,7 @@ function App() {
       }}>
         <div style={{ maxWidth: 1280, margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
           <div>
-            MiniBank Platform © {new Date().getFullYear()} • Secure Banking Sandbox
-          </div>
-          <div style={{ display: 'flex', gap: 16 }}>
-            <span>MongoDB + Mongoose</span>
-            <span>•</span>
-            <span>Express API</span>
-            <span>•</span>
-            <span>Redux Toolkit</span>
-            <span>•</span>
-            <span>Vite React</span>
+            MiniBank Platform © {new Date().getFullYear()} • Secure Banking
           </div>
         </div>
       </footer>
