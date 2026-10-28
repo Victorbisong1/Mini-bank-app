@@ -22,18 +22,22 @@ import {
   Edit, 
   Search, 
   RefreshCw,
-  DollarSign,
   AlertCircle,
-  X
+  X,
+  ShieldCheck
 } from 'lucide-react';
+import axios from 'axios';
 
 export default function AdminPanel() {
   const dispatch = useDispatch();
   const { stats, users, loans, transactions, loading, actionLoading, error, successMessage } = useSelector((state) => state.admin);
-  const { user: currentAdmin } = useSelector((state) => state.auth);
+  const { user: currentAdmin, token } = useSelector((state) => state.auth);
 
-  const [activeTab, setActiveTab] = useState('users'); // 'users' | 'loans' | 'transactions'
+  const [activeTab, setActiveTab] = useState('users'); // 'users' | 'loans' | 'transactions' | 'tiers'
   const [userSearch, setUserSearch] = useState('');
+  
+  // Tier upgrade requests state
+  const [tierRequests, setTierRequests] = useState([]);
 
   // Modals state
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -58,18 +62,31 @@ export default function AdminPanel() {
     status: 'active'
   });
 
+  const fetchTierRequests = async () => {
+    try {
+      const res = await axios.get('/api/admin/tier-requests', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setTierRequests(res.data.requests);
+    } catch (err) {
+      console.error('Error fetching tier requests:', err);
+    }
+  };
+
   useEffect(() => {
     dispatch(fetchAdminStats());
     dispatch(fetchAdminUsers());
     dispatch(fetchAdminLoans());
     dispatch(fetchAdminTransactions());
-  }, [dispatch]);
+    fetchTierRequests();
+  }, [dispatch, token]);
 
   const handleRefresh = () => {
     dispatch(fetchAdminStats());
     dispatch(fetchAdminUsers());
     dispatch(fetchAdminLoans());
     dispatch(fetchAdminTransactions());
+    fetchTierRequests();
   };
 
   const handleToggleBan = (u) => {
@@ -82,6 +99,18 @@ export default function AdminPanel() {
   const handleLoanDecision = (loanId, status) => {
     const reason = status === 'rejected' ? prompt('Enter optional rejection reason:') || 'Administrative decline' : '';
     dispatch(adminUpdateLoanStatus({ id: loanId, status, rejectionReason: reason }));
+  };
+
+  const handleTierAction = async (userId, status) => {
+    try {
+      await axios.put(`/api/admin/tier-requests/${userId}`, { status }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      fetchTierRequests();
+      dispatch(fetchAdminStats());
+    } catch (err) {
+      console.error('Error updating tier status:', err);
+    }
   };
 
   const handleOpenEdit = (u) => {
@@ -154,7 +183,7 @@ export default function AdminPanel() {
             Platform Administration
           </h1>
           <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>
-            Oversee all bank accounts, ban suspicious users, process credit reviews, and create accounts.
+            Oversee all bank accounts, ban suspicious users, process credit reviews, and verify tier upgrades.
           </p>
         </div>
 
@@ -199,7 +228,7 @@ export default function AdminPanel() {
         <div className="glass-card" style={{ padding: '16px 20px' }}>
           <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginBottom: 4 }}>Platform Total Deposits</div>
           <div style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--accent-emerald)', fontFamily: 'var(--font-mono)' }}>
-            ${(stats?.totalPlatformBalances || 0).toLocaleString()}
+            ₦{(stats?.totalPlatformBalances || 0).toLocaleString()}
           </div>
           <div style={{ fontSize: '0.72rem', color: 'var(--text-dim)', marginTop: 4 }}>
             Across all bank wallets
@@ -217,12 +246,12 @@ export default function AdminPanel() {
         </div>
 
         <div className="glass-card" style={{ padding: '16px 20px' }}>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginBottom: 4 }}>Platform Total Transactions</div>
-          <div style={{ fontSize: '1.4rem', fontWeight: 700, color: '#f8fafc', fontFamily: 'var(--font-mono)' }}>
-            {stats?.totalTransactionsCount || 0}
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginBottom: 4 }}>Pending Tier Upgrades</div>
+          <div style={{ fontSize: '1.4rem', fontWeight: 700, color: '#38bdf8', fontFamily: 'var(--font-mono)' }}>
+            {tierRequests.length}
           </div>
           <div style={{ fontSize: '0.72rem', color: 'var(--text-dim)', marginTop: 4 }}>
-            Ledger operations
+            Requires KYC verification
           </div>
         </div>
       </div>
@@ -231,7 +260,8 @@ export default function AdminPanel() {
       <div style={{
         display: 'flex',
         borderBottom: '1px solid var(--border)',
-        gap: 16
+        gap: 16,
+        overflowX: 'auto'
       }}>
         <button
           onClick={() => setActiveTab('users')}
@@ -243,7 +273,8 @@ export default function AdminPanel() {
             fontSize: '0.875rem',
             fontWeight: 600,
             borderBottom: activeTab === 'users' ? '2px solid var(--accent-emerald)' : '2px solid transparent',
-            color: activeTab === 'users' ? '#fff' : 'var(--text-muted)'
+            color: activeTab === 'users' ? '#fff' : 'var(--text-muted)',
+            whiteSpace: 'nowrap'
           }}
         >
           <Users size={16} />
@@ -260,11 +291,30 @@ export default function AdminPanel() {
             fontSize: '0.875rem',
             fontWeight: 600,
             borderBottom: activeTab === 'loans' ? '2px solid var(--accent-emerald)' : '2px solid transparent',
-            color: activeTab === 'loans' ? '#fff' : 'var(--text-muted)'
+            color: activeTab === 'loans' ? '#fff' : 'var(--text-muted)',
+            whiteSpace: 'nowrap'
           }}
         >
           <HandCoins size={16} />
-          Loan Approvals Desk ({loans.filter(l => l.status === 'pending').length} Pending)
+          Loan Approvals ({loans.filter(l => l.status === 'pending').length} Pending)
+        </button>
+
+        <button
+          onClick={() => setActiveTab('tiers')}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            padding: '10px 16px',
+            fontSize: '0.875rem',
+            fontWeight: 600,
+            borderBottom: activeTab === 'tiers' ? '2px solid var(--accent-emerald)' : '2px solid transparent',
+            color: activeTab === 'tiers' ? '#fff' : 'var(--text-muted)',
+            whiteSpace: 'nowrap'
+          }}
+        >
+          <ShieldCheck size={16} />
+          Tier Upgrade Requests ({tierRequests.length})
         </button>
 
         <button
@@ -277,7 +327,8 @@ export default function AdminPanel() {
             fontSize: '0.875rem',
             fontWeight: 600,
             borderBottom: activeTab === 'transactions' ? '2px solid var(--accent-emerald)' : '2px solid transparent',
-            color: activeTab === 'transactions' ? '#fff' : 'var(--text-muted)'
+            color: activeTab === 'transactions' ? '#fff' : 'var(--text-muted)',
+            whiteSpace: 'nowrap'
           }}
         >
           <Activity size={16} />
@@ -288,7 +339,6 @@ export default function AdminPanel() {
       {/* TAB 1: USERS DIRECTORY */}
       {activeTab === 'users' && (
         <div className="glass-card" style={{ padding: 20 }}>
-          {/* Search bar */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
             <div style={{ position: 'relative', width: 280 }}>
               <Search size={14} style={{ position: 'absolute', left: 10, top: 11, color: 'var(--text-dim)' }} />
@@ -309,6 +359,7 @@ export default function AdminPanel() {
                 <tr style={{ borderBottom: '1px solid var(--border)', color: 'var(--text-dim)' }}>
                   <th style={{ padding: '12px 14px' }}>User</th>
                   <th style={{ padding: '12px 14px' }}>Account #</th>
+                  <th style={{ padding: '12px 14px' }}>Tier</th>
                   <th style={{ padding: '12px 14px' }}>Balance</th>
                   <th style={{ padding: '12px 14px' }}>Role</th>
                   <th style={{ padding: '12px 14px' }}>Status</th>
@@ -325,8 +376,13 @@ export default function AdminPanel() {
                     <td style={{ padding: '12px 14px', fontFamily: 'var(--font-mono)' }}>
                       {u.accountNumber}
                     </td>
+                    <td style={{ padding: '12px 14px' }}>
+                      <span className="badge" style={{ backgroundColor: 'rgba(56, 189, 248, 0.1)', color: '#38bdf8' }}>
+                        Tier {u.tier || 1}
+                      </span>
+                    </td>
                     <td style={{ padding: '12px 14px', fontWeight: 700, fontFamily: 'var(--font-mono)', color: 'var(--accent-emerald)' }}>
-                      ${Number(u.balance || 0).toLocaleString()}
+                      ₦{Number(u.balance || 0).toLocaleString()}
                     </td>
                     <td style={{ padding: '12px 14px' }}>
                       <span className={`badge ${u.role === 'admin' ? 'badge-admin' : 'badge-user'}`}>
@@ -402,7 +458,7 @@ export default function AdminPanel() {
                         </div>
                       </td>
                       <td style={{ padding: '12px 14px', fontWeight: 700, fontFamily: 'var(--font-mono)', color: '#fbbf24' }}>
-                        ${Number(l.amount).toLocaleString()}
+                        ₦{Number(l.amount).toLocaleString()}
                       </td>
                       <td style={{ padding: '12px 14px' }}>
                         {l.durationMonths} months
@@ -455,7 +511,77 @@ export default function AdminPanel() {
         </div>
       )}
 
-      {/* TAB 3: GLOBAL TRANSACTIONS LEDGER */}
+      {/* TAB 3: TIER UPGRADE REQUESTS */}
+      {activeTab === 'tiers' && (
+        <div className="glass-card" style={{ padding: 20 }}>
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.85rem' }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid var(--border)', color: 'var(--text-dim)' }}>
+                  <th style={{ padding: '12px 14px' }}>User</th>
+                  <th style={{ padding: '12px 14px' }}>Current Tier</th>
+                  <th style={{ padding: '12px 14px' }}>Target Tier</th>
+                  <th style={{ padding: '12px 14px' }}>BVN</th>
+                  <th style={{ padding: '12px 14px' }}>Utility Bill</th>
+                  <th style={{ padding: '12px 14px', textAlign: 'right' }}>Review Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {tierRequests.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} style={{ textAlign: 'center', padding: '30px 0', color: 'var(--text-dim)' }}>
+                      No pending tier upgrade applications.
+                    </td>
+                  </tr>
+                ) : (
+                  tierRequests.map((u) => (
+                    <tr key={u._id} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                      <td style={{ padding: '12px 14px' }}>
+                        <div style={{ fontWeight: 600 }}>{u.name}</div>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', fontFamily: 'var(--font-mono)' }}>
+                          {u.accountNumber} ({u.email})
+                        </div>
+                      </td>
+                      <td style={{ padding: '12px 14px' }}>Tier {u.tier || 1}</td>
+                      <td style={{ padding: '12px 14px', fontWeight: 700, color: '#38bdf8' }}>
+                        Tier {u.tierRequest?.targetTier || 2}
+                      </td>
+                      <td style={{ padding: '12px 14px', fontFamily: 'var(--font-mono)' }}>
+                        {u.tierRequest?.bvn || 'N/A'}
+                      </td>
+                      <td style={{ padding: '12px 14px' }}>
+                        {u.tierRequest?.billType || 'Utility Bill'}
+                      </td>
+                      <td style={{ padding: '12px 14px', textAlign: 'right' }}>
+                        <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
+                          <button
+                            onClick={() => handleTierAction(u._id, 'approved')}
+                            className="btn btn-primary"
+                            style={{ padding: '4px 10px', fontSize: '0.75rem' }}
+                          >
+                            <CheckCircle size={13} />
+                            <span>Approve</span>
+                          </button>
+                          <button
+                            onClick={() => handleTierAction(u._id, 'rejected')}
+                            className="btn btn-danger"
+                            style={{ padding: '4px 10px', fontSize: '0.75rem' }}
+                          >
+                            <XCircle size={13} />
+                            <span>Reject</span>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 4: GLOBAL TRANSACTIONS LEDGER */}
       {activeTab === 'transactions' && (
         <div className="glass-card" style={{ padding: 20 }}>
           <div style={{ overflowX: 'auto' }}>
@@ -483,7 +609,7 @@ export default function AdminPanel() {
                       {t.description}
                     </td>
                     <td style={{ padding: '12px 14px', fontWeight: 600, fontFamily: 'var(--font-mono)' }}>
-                      ${Number(t.amount).toLocaleString()}
+                      ₦{Number(t.amount).toLocaleString()}
                     </td>
                     <td style={{ padding: '12px 14px', color: 'var(--text-muted)' }}>
                       {t.counterparty?.name || 'MiniBank Apex'}
@@ -560,7 +686,7 @@ export default function AdminPanel() {
               </div>
 
               <div className="form-group" style={{ marginBottom: 24 }}>
-                <label className="form-label">Initial Balance Deposit ($ USD)</label>
+                <label className="form-label">Initial Balance Deposit (₦ Naira)</label>
                 <input
                   type="number"
                   min="0"
@@ -621,7 +747,7 @@ export default function AdminPanel() {
               </div>
 
               <div className="form-group">
-                <label className="form-label">Account Balance ($ USD)</label>
+                <label className="form-label">Account Balance (₦ Naira)</label>
                 <input
                   type="number"
                   required
