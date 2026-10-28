@@ -381,7 +381,54 @@ const deposit = async (req, res) => {
   }
 }
 
+// @route   POST /api/user/kyc-request
+const submitKycRequest = async (req, res) => {
+  try {
+    const { targetTier, bvn, billType } = req.body;
+
+    if (!targetTier || !bvn) {
+      return res.status(400).json({ message: 'Target tier and BVN are required.' });
+    }
+
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    // Attach tier request details to the user document so the admin panel can query it
+    user.tierRequest = {
+      targetTier: Number(targetTier),
+      bvn: bvn.trim(),
+      billType: billType || 'Utility Bill',
+      status: 'pending',
+      requestedAt: new Date()
+    };
+
+    if (req.file) {
+      user.tierRequest.billImage = req.file.path;
+    }
+
+    await user.save();
+
+    res.status(200).json({
+      message: 'KYC upgrade request submitted successfully! Awaiting review.'
+    });
+  } catch (err) {
+    console.error('KYC Request error:', err);
+    res.status(500).json({ message: 'Server error processing KYC request.' });
+  }
+};
+
 
 module.exports = {
-  getdashboard, transactions, transfer, withdraw, deposit, registeruser, login, getme, lookup
+  getdashboard, 
+  transactions, 
+  transfer, 
+  withdraw, 
+  deposit, 
+  registeruser, 
+  login, 
+  getme, 
+  lookup, 
+  submitKycRequest
 }

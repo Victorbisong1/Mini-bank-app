@@ -28,6 +28,7 @@ router.post('/user/transfer', protect, transfer)
 router.get('/user/transactions', protect, transactions)
 router.post('/user/withdraw', protect, withdraw)
 router.post('/user/deposit', protect, deposit)
+router.post('/user/kyc-request', protect, submitKycRequest)
 
 // bills routes
 router.post('/airtime', protect, airtime)
