@@ -1,7 +1,7 @@
-const User = require('../models/Users');
-const Transaction = require('../models/Transaction');
-const Loan = require('../models/Loan');
-const { generateMeterToken } = helpers = require('../utils/helpers');;
+const User = require('../models/Users')
+const Transaction = require('../models/Transaction')
+const Loan = require('../models/Loan')
+const { generateMeterToken } = helpers = require('../utils/helpers');
 
 // @route   POST /api/bills/airtime
 const airtime = async(req, res) => {
@@ -18,7 +18,7 @@ const airtime = async(req, res) => {
 
     if (user.balance < numAmount) {
       return res.status(400).json({
-        message: `Insufficient balance. Available: $${user.balance.toLocaleString()}.`
+        message: `Insufficient balance. Available: ₦${user.balance.toLocaleString()}.`
       });
     }
 
@@ -48,7 +48,7 @@ const airtime = async(req, res) => {
     });
 
     res.json({
-      message: `Successfully recharged $${numAmount} airtime to ${phone} on ${provider}!`,
+      message: `Successfully recharged ₦${numAmount.toLocaleString()} airtime to ${phone} on ${provider}!`,
       newBalance,
       transaction: tx
     });
@@ -73,7 +73,7 @@ const getdata = async(req, res) => {
 
     if (user.balance < numAmount) {
       return res.status(400).json({
-        message: `Insufficient balance. Available: $${user.balance.toLocaleString()}.`
+        message: `Insufficient balance. Available: ₦${user.balance.toLocaleString()}.`
       });
     }
 
@@ -129,7 +129,7 @@ const electricity = async(req, res) => {
 
     if (user.balance < numAmount) {
       return res.status(400).json({
-        message: `Insufficient balance. Available: $${user.balance.toLocaleString()}.`
+        message: `Insufficient balance. Available: ₦${user.balance.toLocaleString()}.`
       });
     }
 
@@ -187,8 +187,9 @@ const getloan = async(req, res) => {
       return res.status(400).json({ message: 'Please enter a valid loan amount.' });
     }
 
-    if (numAmount > 50000) {
-      return res.status(400).json({ message: 'Maximum single loan limit is $50,000.' });
+    // Updated limit to ₦5,000,000 matching frontend limits
+    if (numAmount > 5000000) {
+      return res.status(400).json({ message: 'Maximum single loan limit is ₦5,000,000.' });
     }
 
     if (!purpose || !purpose.trim()) {
