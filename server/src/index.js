@@ -7,7 +7,7 @@ const seedDatabase = require('./config/seed');
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || process.env.PORT2;
+const PORT = process.env.PORT || process.env.PORT2 || 5000;
 
 // Middleware
 app.use(cors());
@@ -39,13 +39,25 @@ app.use((err, req, res, next) => {
 
 // Initialize DB and Start Server
 const startServer = async () => {
-  await connectDB();
-  await seedDatabase();
-
-  app.listen(PORT, () => {
-    console.log(`🚀 MiniBank Backend running on port ${PORT}`);
+  try {
+    await connectDB();
     console.log(`📡 Database: Connected to MongoDB`);
-  });
+
+    // Wrap seeding in try/catch so it doesn't block server port binding if it errors
+    try {
+      await seedDatabase();
+    } catch (seedErr) {
+      console.log('Seeding notice:', seedErr.message);
+    }
+
+    // Explicitly bind to '0.0.0.0' for Render compatibility
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`🚀 MiniBank Backend running on port ${PORT}`);
+    });
+  } catch (err) {
+    console.error('❌ Failed to start server:', err);
+    process.exit(1);
+  }
 };
 
 startServer();
